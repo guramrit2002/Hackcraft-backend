@@ -29,6 +29,7 @@ class Hackathon(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     logo = models.ImageField(upload_to='logo', max_length=250,null=True,blank=True)
     name = models.CharField(max_length=250)
+    organisation_name = models.CharField(max_length=250,default = None)
     mode_of_conduct = models.CharField(max_length=250, choices=MODE_CHOICES)
     deadline = models.DateField(auto_now=False, auto_now_add=False)
     team_size = models.IntegerField()

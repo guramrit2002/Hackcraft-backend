@@ -7,6 +7,20 @@ class HackathonSerializer(serializers.ModelSerializer):
     class Meta:
         model = Hackathon
         fields = '__all__'
+    
+    # def get_hackathon(self,obj):
+    #     return {
+    #         '_id': obj._id,
+    #         'name': obj.name,
+    #         'organisation_name': obj.organisation_name,
+    #         'price': obj.fee,
+    #         'start_date_time': obj.start_date_time,
+    #         'team_size': obj.team_size,
+    #         'mode_of_conduct': obj.mode_of_conduct,
+    #         'venue': obj.venue,
+    #         'Logo': obj.logo,
+    #         'Image': obj.image1,  # You might need to adjust this based on your requirements
+    #     }
 
 class RoundSerializer(serializers.ModelSerializer):
     
