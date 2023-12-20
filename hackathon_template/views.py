@@ -9,11 +9,24 @@ from .serializers import *
 def gethackathon(request):
     try:
         hackathons = Hackathon.objects.all()
-        serializer = HackathonSerializer(hackathons, many=True)
-        return Response(serializer.data,status=status.HTTP_200_OK)
+        modified_data = [
+            {
+                '_id': hackathon._id,
+                'name': hackathon.name,
+                'organisation_name': hackathon.organisation_name,
+                'price': hackathon.fee,
+                'start_date_time': hackathon.start_date_time,
+                'team_size': hackathon.team_size,
+                'mode_of_conduct': hackathon.mode_of_conduct,
+                'venue': hackathon.venue,
+                'Logo': hackathon.logo.url if hackathon.logo else None,
+                'Image': hackathon.image1.url if hackathon.image1 else None,
+            }
+            for hackathon in hackathons
+        ]
+        return Response(modified_data,status=status.HTTP_200_OK)
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
 
 @api_view(['GET'])
 def defaultpage(request, id):
