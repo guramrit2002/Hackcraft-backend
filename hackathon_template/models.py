@@ -72,8 +72,8 @@ class Round(models.Model):
 class Field(models.Model):
     _id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
     hackathon = models.ForeignKey(Hackathon,on_delete = models.CASCADE,null = True,blank = True)
-    name = models.CharField(max_length=200)
-    type = models.CharField(choices = FIELD_CHOICE, max_length = 200)
+    name = models.CharField(max_length=200,null=True,blank=True)
+    type = models.CharField(choices = FIELD_CHOICE, max_length = 200,null=True,blank=True)
     
     def __str__(self) -> str:
         return str(self._id)
@@ -81,23 +81,23 @@ class Field(models.Model):
 
 class Textproperties(models.Model):
     _id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
-    field = models.OneToOneField(Field,on_delete = models.CASCADE,null = True,blank = True)
-    font = models.CharField(max_length=200)
-    size = models.IntegerField()
-    text_color = models.CharField(max_length=200)
+    field = models.OneToOneField(Field,on_delete = models.CASCADE,null=True,blank=True)
+    font = models.CharField(max_length=200,null=True,blank=True)
+    size = models.IntegerField(null=True,blank=True)
+    text_color = models.CharField(max_length=200,null=True,blank=True)
     font_weight = models.IntegerField(validators=[
         MinValueValidator(
             limit_value=100, message='Value must be greater than or equal to {limit_value}.'),
         MaxValueValidator(
             limit_value=900, message='Value must be less than or equal to {limit_value}.')
-    ])
-    italics = models.BooleanField()
-    underline = models.BooleanField()
-    strikethrogh = models.BooleanField()
-    upper_case = models.BooleanField()
+    ],null=True,blank=True)
+    italics = models.BooleanField(null=True,blank=True)
+    underline = models.BooleanField(null=True,blank=True)
+    strikethrogh = models.BooleanField(null=True,blank=True)
+    upper_case = models.BooleanField(null=True,blank=True)
     align = models.CharField(choices=ALIGN_CHOICES, max_length=10)
-    letter_spacing = models.IntegerField()
-    letter_spacing = models.IntegerField()
+    letter_spacing = models.IntegerField(null=True,blank=True)
+    letter_spacing = models.IntegerField(null=True,blank=True)
     
     def __str__(self) -> str:
         return str(self._id)
@@ -114,8 +114,8 @@ class Container(models.Model):
     
 class Containerproperty(models.Model):
     _id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True, )
-    container = models.OneToOneField(Container, on_delete = models.CASCADE,null = True,blank = True)
-    Color = models.CharField(max_length=200,null = False)
+    container = models.OneToOneField(Container, on_delete = models.CASCADE,null=True,blank=True)
+    Color = models.CharField(max_length=200,null=True,blank=True)
     border_color = models.CharField(max_length=200,null = False,blank=False)
     border_width = models.IntegerField(null = False,blank=False)
     height = models.IntegerField(null = False,blank=False)
