@@ -75,17 +75,22 @@ def defaultpost(request):
     
     if request.method == 'POST':
         body = request.data
+        # print(body)
         if body :
             hackathon = body['hackathon']
             hackathon_serializer = HackathonSerializer(data= hackathon,many= False)
             if hackathon_serializer.is_valid():
                 new_hackathon = hackathon_serializer.save()
-                for i in body.get('rounds', []):
+                for i in body.get('round', []):
                         i['hackathon'] = str(new_hackathon._id)
+                        
                         round_serializer = RoundSerializer(data=i)
+                        
                         if round_serializer.is_valid():
+
                             round_serializer.save()
                         else:
+                            print(round_serializer.errors)
                             return Response({"error": round_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
                     
                 for i in body['fields']:
@@ -100,8 +105,10 @@ def defaultpost(request):
                                 field_properties_serializer.validated_data['field'] = new_field
                                 field_properties_serializer.save()
                             else:
+                                print()
                                 return Response({"error":field_properties_serializer.errors},status=status.HTTP_500_INTERNAL_SERVER_ERROR)
                     else:
+                        print(field_serializer.errors)
                         return Response(field_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
                 for i in body['containers']:
                     container_serializer = ContainerSerializer(data=i)
@@ -115,13 +122,17 @@ def defaultpost(request):
                             container_property_serializer.validated_data['container'] = new_container
                             container_property_serializer.save()
                         else:
+                            
                             return Response({"error":container_property_serializer.errors},status=status.HTTP_400_BAD_REQUEST)
                     else:
+                        print(container_serializer.errors)
                         return Response({'error':container_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
-                
+
             else:
+                print(hackathon_serializer.errors)
                 return Response({"error": hackathon_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
         else:
+
             return Response({'error':'Response is required'},status=status.HTTP_400_BAD_REQUEST)
         
     return Response({'message':'New default template is created'},status=status.HTTP_201_CREATED)
