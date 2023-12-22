@@ -43,14 +43,25 @@ def hackathon_regiteration_form_get_specific(request, id):
 
 
 @api_view(['POST'])
-def hackathon_registeration_form_post(request):
+def hackathon_registeration_form_post(request,id):
     try:
         if request.method == 'POST':
             request_body = request.data
-            serializer_register_form = HackathonRegistrationFormSerializer(data=request_body["form"], many=False)
+            try:
+                hackathon = Hackathon.objects.get(_id = id)
+                print(hackathon)
+            except Exception as e:
+                return Response({'error':'Hackathon not found'},status = status.HTTP_404_NOT_FOUND)
             
+            request_body["form"]["hackathon"] = str(hackathon._id)
+            
+            serializer_register_form = HackathonRegistrationFormSerializer(data=request_body["form"], many=False)
             if serializer_register_form.is_valid():
+                
+                serializer_register_form.validated_data['hackathon'] = hackathon
+                print(serializer_register_form.validated_data['hackathon'])
                 new_form = serializer_register_form.save()
+                print(new_form)
                 for custom_field_data in request_body.get("custom_fields", []):
                     custom_field_data['form'] = str(new_form._id)
                     serializer_custom_fields = CustomFieldSerializer(data=custom_field_data)
@@ -83,7 +94,9 @@ def hackathon_registeration_form_post(request):
                                     return Response({"error": serializer_custom_multiple.errors}, status=status.HTTP_400_BAD_REQUEST)
                     else:
                         return Response({"error": serializer_custom_fields.errors}, status=status.HTTP_400_BAD_REQUEST)
-            return Response(status=status.HTTP_201_CREATED)
+            else:
+                return Response({'error':serializer_register_form.errors}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'message':'Registeration form is created'},status=status.HTTP_201_CREATED)
         else:
             return Response({"error": "Invalid request method"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
     except Exception as e:
@@ -97,7 +110,6 @@ def hackathon_registeration_form_post(request):
 #         "participant_email": "",
 #         "participant_phone": 0,
 #         "participant_gender": "",
-#         "hackathon": "2b6b8892-a76f-436c-8812-2e09d37ffe31"
 #     },
 #     "custom_fields": [
 #         {

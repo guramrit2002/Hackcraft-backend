@@ -8,5 +8,5 @@ urlpatterns = [
     path("default/new", defaultpost, name="new-hackathon"),
     path('form/',hackathon_regiteration_form_get,name="GetHackathon"),
     path('form/<uuid:id>',hackathon_regiteration_form_get_specific,name="GetSpecificHackathon"),
-    path("form/create", hackathon_registeration_form_post, name="PostHackathonForm")
+    path("form/create/<id>", hackathon_registeration_form_post, name="PostHackathonForm")
 ]

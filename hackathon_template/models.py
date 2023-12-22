@@ -1,7 +1,9 @@
 from django.db import models
 from hackathons_registration.models import *
 from django.core.validators import MinValueValidator, MaxValueValidator
+import uuid
 # Create your models here.
+
 
 MODE_CHOICES = (
     ('Online', 'Online'),
@@ -24,8 +26,7 @@ FIELD_CHOICE = (
 
 
 class Hackathon(models.Model):
-    _id = models.UUIDField(
-        primary_key=True, default=uuid.uuid4, editable=False, unique=True)
+    _id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
     logo = models.ImageField(upload_to='logo', max_length=250,null=True,blank=True)
     name = models.CharField(max_length=250)
