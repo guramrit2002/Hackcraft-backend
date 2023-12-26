@@ -30,8 +30,9 @@ def hackathon_regiteration_form_get(request):
 @api_view(['GET'])
 def hackathon_regiteration_form_get_specific(request, id):
     try:
-        data = HackathonRegisterationForm.objects.filter(_id=id)
-        custom_field = CustomField.objects.filter(form=id)
+        data = HackathonRegisterationForm.objects.filter(hackathon=Hackathon.objects.get(_id = id))
+        # print(data.id)
+        custom_field = CustomField.objects.filter(form=data[0])
         serializer_regiter_form = HackathonRegistrationFormSerializer(data, many=True)
         serializer_custom_field = CustomFieldSerializer(custom_field, many=True)
         return Response({
