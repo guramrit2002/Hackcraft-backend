@@ -82,12 +82,12 @@ def defaultpost(request):
             if hackathon_serializer.is_valid():
                 new_hackathon = hackathon_serializer.save()
                 for i in body.get('round', []):
+                        
                         i['hackathon'] = str(new_hackathon._id)
                         
                         round_serializer = RoundSerializer(data=i)
                         
                         if round_serializer.is_valid():
-
                             round_serializer.save()
                         else:
                             print(round_serializer.errors)
@@ -127,7 +127,7 @@ def defaultpost(request):
                     else:
                         print(container_serializer.errors)
                         return Response({'error':container_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
-
+                return Response({'hackathon created':hackathon_serializer.data},status=status.HTTP_201_CREATED)
             else:
                 print(hackathon_serializer.errors)
                 return Response({"error": hackathon_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
@@ -135,5 +135,5 @@ def defaultpost(request):
 
             return Response({'error':'Response is required'},status=status.HTTP_400_BAD_REQUEST)
         
-    return Response({'message':'New default template is created'},status=status.HTTP_201_CREATED)
+    
 

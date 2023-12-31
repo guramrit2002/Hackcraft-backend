@@ -77,7 +77,7 @@ class Field(models.Model):
     type = models.CharField(choices = FIELD_CHOICE, max_length = 200,null=True,blank=True)
     
     def __str__(self) -> str:
-        return str(self._id)
+        return str(self.name)
 
 
 class Textproperties(models.Model):
@@ -111,7 +111,7 @@ class Container(models.Model):
     type = models.CharField(choices = FIELD_CHOICE, max_length = 200)
     
     def __str__(self) -> str:
-        return str(self._id)
+        return str(self.name)
     
 class Containerproperty(models.Model):
     _id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True, )

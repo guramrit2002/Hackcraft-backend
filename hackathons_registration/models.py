@@ -28,7 +28,7 @@ class HackathonRegisterationForm(models.Model):
     participant_gender = models.CharField(choices=GENDER, max_length=10,blank=True)
     
     def __str__(self):
-        return str(self._id)
+        return str(self.hackathon)
     
 class CustomField(models.Model):
     _id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
@@ -38,7 +38,7 @@ class CustomField(models.Model):
     type = models.CharField(choices=TYPE_OF_FIELDS,max_length=100)
     
     def __str__(self):
-        return str(self._id)
+        return str(self.form)
     
 class ShortAnswerField(models.Model):
     _id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
