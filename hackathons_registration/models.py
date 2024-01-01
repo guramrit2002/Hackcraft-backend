@@ -8,12 +8,7 @@ GENDER = (
     ('Other','Other')
 )
 
-TYPE_OF_FIELDS = (
-    ('Short','Short'),
-    ('Long','Long'),
-    ('Down','Down'),
-    ('Multiple','Multiple')
-)
+
 # Create your models here.
 
 
@@ -35,7 +30,6 @@ class CustomField(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     form = models.ForeignKey(HackathonRegisterationForm,on_delete=models.CASCADE)
     label = models.CharField(max_length=100)
-    type = models.CharField(choices=TYPE_OF_FIELDS,max_length=100)
     
     def __str__(self):
         return str(self.form)
