@@ -32,7 +32,7 @@ class CustomField(models.Model):
     label = models.CharField(max_length=100)
     
     def __str__(self):
-        return str(self.form)
+        return f'{str(self.label)} | {str(self.form)}'
     
 class ShortAnswerField(models.Model):
     _id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
