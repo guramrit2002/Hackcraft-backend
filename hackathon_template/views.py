@@ -8,7 +8,7 @@ from .serializers import *
 @api_view(['GET'])
 def gethackathon(request):
     try:
-        hackathons = Hackathon.objects.all()
+        hackathons = Hackathon.objects.filter(form_exist = True)
         modified_data = [
             {
                 '_id': hackathon._id,

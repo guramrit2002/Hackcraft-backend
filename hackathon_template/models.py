@@ -50,6 +50,7 @@ class Hackathon(models.Model):
     contact1_number = models.IntegerField(default=None)
     contact2_name = models.CharField(max_length=250, default=None)
     contact2_number = models.IntegerField(default=None)
+    form_exist  = models.BooleanField(default = False)
     
     def __str__(self) -> str:
         return str(self.name)

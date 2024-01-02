@@ -49,8 +49,7 @@ def hackathon_registeration_form_post(request,id):
         if request.method == 'POST':
             request_body = request.data
             try:
-                hackathon = Hackathon.objects.get(_id = id)
-                print(hackathon)
+                hackathon = Hackathon.objects.get( _id = id)
             except Exception as e:
                 return Response({'error':'Hackathon not found'},status = status.HTTP_404_NOT_FOUND)
             
@@ -66,7 +65,6 @@ def hackathon_registeration_form_post(request,id):
                 for custom_field_data in request_body.get("custom_fields", []):
                     custom_field_data['form'] = str(new_form._id)
                     serializer_custom_fields = CustomFieldSerializer(data=custom_field_data)
-                    
                     if serializer_custom_fields.is_valid():
                         new_custom_field = serializer_custom_fields.save()
                         if custom_field_data.get("short_answer"):
@@ -97,6 +95,12 @@ def hackathon_registeration_form_post(request,id):
                         return Response({"error": serializer_custom_fields.errors}, status=status.HTTP_400_BAD_REQUEST)
             else:
                 return Response({'error':serializer_register_form.errors}, status=status.HTTP_400_BAD_REQUEST)
+            try:
+                
+                hackathon.form_exist = True
+                hackathon.save()
+            except Exception as e:
+                return Response({'error':str(e)},status = status.HTTP_400_BAD_REQUEST)
             return Response({'message':'Registeration form is created'},status=status.HTTP_201_CREATED)
         else:
             return Response({"error": "Invalid request method"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
