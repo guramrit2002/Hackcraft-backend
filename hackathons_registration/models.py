@@ -2,25 +2,18 @@ from django.db import models
 from hackathon_template.models import Hackathon
 import uuid
 
-GENDER = (
-    ('Male','Male'),
-    ('Female','Female'),
-    ('Other','Other')
-)
-
-
 # Create your models here.
 
 
 class HackathonRegisterationForm(models.Model):
+    
     _id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
     created = models.DateTimeField(auto_now_add=True)
     hackathon = models.ForeignKey(Hackathon,on_delete=models.CASCADE)
-    # required fields
     participant_name = models.CharField(max_length=100,blank=True)
     participant_email = models.EmailField(max_length=254,blank=True)
     participant_phone = models.IntegerField(null=True)
-    participant_gender = models.CharField(choices=GENDER, max_length=10,blank=True)
+    participant_gender = models.CharField(max_length=10,blank=True)
     
     def __str__(self):
         return str(self.hackathon)

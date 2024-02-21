@@ -20,7 +20,7 @@ def gethackathon(request):
                 'mode_of_conduct': hackathon.mode_of_conduct,
                 'venue': hackathon.venue,
                 'Logo': hackathon.logo.url if hackathon.logo else None,
-                'Image': hackathon.image1.url if hackathon.image1 else None,
+                'Image': [hackathon.image1,hackathon.image2,hackathon.image3,hackathon.image4,hackathon.image5]
             }
             for hackathon in hackathons
         ]

@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status
 import uuid
+from hackathon_template.serializers import HackathonSerializer
 
 
 @api_view(['GET'])
@@ -12,8 +13,10 @@ def hackathonGet(request):
     try:
         data = Hackathon.objects.all()
         serializer = HackathonSerializer(data, many=True)
+        print(serializer.data)
         return Response({"data": serializer.data}, status=status.HTTP_200_OK)
     except Exception as e:
+        print(e)
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
