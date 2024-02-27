@@ -9,6 +9,7 @@ from .serializers import *
 def gethackathon(request):
     try:
         hackathons = Hackathon.objects.filter(form_exist = True)
+        print(hackathons)
         modified_data = [
             {
                 '_id': hackathon._id,
@@ -20,12 +21,20 @@ def gethackathon(request):
                 'mode_of_conduct': hackathon.mode_of_conduct,
                 'venue': hackathon.venue,
                 'Logo': hackathon.logo.url if hackathon.logo else None,
-                'Image': [hackathon.image1,hackathon.image2,hackathon.image3,hackathon.image4,hackathon.image5]
+                'Image': [hackathon.image1,hackathon.image2,hackathon.image3,hackathon.image4,hackathon.image5],
+                'social':{
+                    "discord":hackathon.discord,
+                    "facebook":hackathon.facebook,
+                    "email":hackathon.email,
+                    "twitter":hackathon.twitter,
+                    "linkedin":hackathon.linkedin
+                }
             }
             for hackathon in hackathons
         ]
         return Response(modified_data,status=status.HTTP_200_OK)
     except Exception as e:
+        print(e)
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @api_view(['GET'])

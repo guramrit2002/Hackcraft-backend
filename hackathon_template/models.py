@@ -5,10 +5,6 @@ import uuid
 # Create your models here.
 
 
-MODE_CHOICES = (
-    ('Online', 'Online'),
-    ('Offline', 'Offline'),
-)
 VISIBLE_CHOICES = (
     ('Public', 'Public'),
     ('Private', 'Private')
@@ -43,19 +39,36 @@ class Hackathon(models.Model):
     image3 = models.CharField(max_length=250,null=True,blank=True)
     image4 = models.CharField(max_length=250,null=True,blank=True)
     image5 = models.CharField(max_length=250,null=True,blank=True)
-    website = models.CharField(max_length=100,null = True,blank = True)
-    fee = models.CharField(max_length = 100 ,default=None)
-    venue = models.CharField(max_length=500, default=None)
-    contact1_name = models.CharField(max_length=250, default=None)
+    fee = models.CharField(max_length = 100 ,default=None,null = True,blank = True)
+    venue = models.CharField(max_length=500, default=None,)
+    contact1_name = models.CharField(max_length=250, default=None,null = True,blank = True)
     contact1_number = models.IntegerField(default=None)
-    contact2_name = models.CharField(max_length=250, default=None)
+    contact2_name = models.CharField(max_length=250, default=None,null = True,blank = True)
     contact2_number = models.IntegerField(default=None)
     form_exist  = models.BooleanField(default = False)
+    number_of_registeration = models.IntegerField(null = True,blank=True,default= None)
+    discord = models.CharField(max_length = 200,null = True,blank=True,default= None)
+    email = models.EmailField(null = True,blank=True,default= None)
+    website = models.CharField(max_length=100,null = True,blank = True,default= None)
+    github = models.CharField(max_length = 200,null = True,blank = True,default= '')
+    facebook = models.CharField(max_length = 200,null = True,blank = True,default= '')
+    twitter = models.CharField(max_length = 200,null = True,blank = True,default= '')
+    linkedin = models.CharField(max_length = 200,null = True,blank = True,default= '')
     
     def __str__(self) -> str:
         return str(self.name)
 
-
+class ThemeHackathon(models.Model):
+    '''
+    tags of hackathon data
+    '''
+    _id = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, editable=False, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    theme = models.CharField(max_length = 200)
+    
+    def __str__(self) -> str:
+        return self.theme
 class Round(models.Model):
     _id = models.UUIDField(
         primary_key=True, default=uuid.uuid4, editable=False, unique=True)
@@ -119,8 +132,13 @@ class Containerproperty(models.Model):
     container = models.OneToOneField(Container, on_delete = models.CASCADE,null=True,blank=True)
     Color = models.CharField(max_length=200,null=True,blank=True)
     border_color = models.CharField(max_length=200,null = False,blank=False)
-    border_width = models.IntegerField(null = False,blank=False)
-    height = models.IntegerField(null = False,blank=False)
+    border_radius= models.DecimalField(max_digits=2,decimal_places=2,null = True,blank=True)
+    box_shadow_color = models.CharField(max_length=200,null=True,blank=True)
+    blur_radius = models.DecimalField(max_digits = 2,decimal_places=2,null = True,blank=True)
+    focused_border_color = models.CharField(max_length=200,null = True,blank=True)
+    border_width = models.IntegerField(null = True,blank=True)
+    height = models.IntegerField(null = True,blank=True)
+    
     
     def __str__(self) -> str:
         return str(self._id)
