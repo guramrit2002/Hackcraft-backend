@@ -1,11 +1,13 @@
 from pathlib import Path
 from decouple import config
 import os
+import firebase_admin
+from firebase_admin import credentials
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-cred = config('CRED')
-default_app = config('DEFAULT_APP')
+cred= credentials.Certificate(''.join([str(BASE_DIR),config('FIREBASE_PATH')]))
+default_app= firebase_admin.initialize_app(cred, options={'projectId': config('PROJECT_ID')})
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
@@ -32,6 +34,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'hackathons_registration',
     'hackathon_template',
+    'user'
 ]
 
 MIDDLEWARE = [
