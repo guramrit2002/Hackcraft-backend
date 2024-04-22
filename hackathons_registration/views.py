@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status
 import uuid
+from django.shortcuts import get_object_or_404
 from hackathon_template.serializers import HackathonSerializer
 
 
@@ -31,17 +32,139 @@ def hackathon_regiteration_form_get(request):
 
 
 @api_view(['GET'])
-def hackathon_regiteration_form_get_specific(request, id):
+def hackathon_registration_form_get_specific(request, id):
     try:
-        data = HackathonRegisterationForm.objects.filter(hackathon=Hackathon.objects.get(_id = id))
-        # print(data.id)
-        custom_field = CustomField.objects.filter(form=data[0])
-        serializer_regiter_form = HackathonRegistrationFormSerializer(data, many=True)
-        serializer_custom_field = CustomFieldSerializer(custom_field, many=True)
-        return Response({
-            "form": serializer_regiter_form.data,
-            "custom_fields": serializer_custom_field.data
-        }, status=status.HTTP_200_OK)
+        # hakathon registerations form fetching using hackathon id
+        form = get_object_or_404(HackathonRegisterationForm, hackathon___id=id)
+        formserializer = HackathonRegistrationFormSerializer(form)
+        # Initialize a array to collect all serialized data
+        serialized_data = []
+
+        # from here fields start fetching and serializing
+        # Serialize LongAnswerField
+        longfields = LongAnswerField.objects.filter(form=form)
+        if longfields:
+            data = LongAnswerFieldSerializer(longfields, many=True).data
+            for i in data:
+                i['type'] = 'long answer' 
+            serialized_data+=(data)
+            
+
+        # Serialize ShortAnswerField
+        shortfields = ShortAnswerField.objects.filter(form=form)
+        if shortfields:
+            data= ShortAnswerFieldSerializer(shortfields, many=True).data
+            for i in data:
+                i['type'] = 'short answer'
+            serialized_data+=(data)
+
+        # Serialize Radio Field
+        radiofields = MultipleChoiceField.objects.filter(form=form, type='radio')
+        if serialized_data:
+            data = MultipleChoiceFieldSerializer(radiofields, many=True).data
+            for i in data:
+                i['type'] = 'radio'
+            serialized_data+= data
+        
+        # Serialize Check Field 
+        checkfields = MultipleChoiceField.objects.filter(form=form, type='checkbox')
+        if checkfields:
+            data = MultipleChoiceFieldSerializer(checkfields, many=True).data
+            for i in data:
+                i['type'] = 'check'
+            serialized_data+=(data)
+
+        # Serialize toggle Field
+        togglefields = Toggle.objects.filter(form=form)
+        if togglefields:
+            data = ToggleSerializer(togglefields, many=True).data
+            for i in data:
+                i['type'] = 'toggle'
+            serialized_data+=data
+
+        #Serialize Stepper Field 
+        stepperfields = Stepper.objects.filter(form=form)
+        if stepperfields:
+            data = StepperSerializer(stepperfields, many=True).data
+            for i in data:
+                i['type'] = 'stepper'
+            serialized_data+=data
+
+        # Serialize Date Field
+        datefields = Date.objects.filter(form=form)
+        if datefields:
+            data = DateSerializer(datefields, many=True).data
+            for i in data:
+                i['type'] = 'date'
+            serialized_data+=data
+
+        # Serialize Slider Field
+        sliderfields = Slider.objects.filter(form=form, type='norange')
+        if sliderfields:
+            data = SliderSerializer(sliderfields, many=True).data
+            for i in data:
+                i['type'] = 'slider'
+            serialized_data+=data
+
+        # Serialize range slider Field
+        rangesliderfields = Slider.objects.filter(form=form, type='range')
+        if rangesliderfields:
+            data = SliderSerializer(rangesliderfields, many=True).data
+            for i in data:
+                i['type'] = 'range'
+            serialized_data+=data
+
+        # Serialize linear slider field
+        linearsliderfields = Slider.objects.filter(form=form, type='linear')
+        if linearsliderfields:
+            data = SliderSerializer(linearsliderfields, many=True).data
+            for i in data:
+                i['type'] = 'linear'
+            serialized_data+=data
+
+        # Serialize File Upload Field
+        fileuploadfields = Fileupload.objects.filter(form=form)
+        if fileuploadfields:
+            data = FileuploadSerializer(fileuploadfields, many=True).data
+            for i in data:
+                i['type'] = 'file'
+            serialized_data+=data
+
+        # Serialized Tag Field
+        tagsfields = Tags.objects.filter(form=form)
+        if tagsfields:
+            data = TagsSerializer(tagsfields, many=True).data
+            for i in data :
+                i['type'] = 'tag'
+            serialized_data+=data
+            
+        sorted_fields = []
+        print(form.number_of_fields)
+        for i in range(form.number_of_fields):
+            try:
+                print(serialized_data[i]['serial_number'])
+                for j in serialized_data:
+                    if i+1 == j['serial_number']:
+                        sorted_fields.append(serialized_data[i])
+            except Exception as e:
+                if str(e) != "list index out of range":
+                    return Response({str(e)})
+        print(sorted_fields)
+        #from here sections will be fetched and serialized 
+        sections = Section.objects.filter(form = form)
+        sectionserializer = SectionSerializer(sections,many = True)
+        
+        
+        final_res = {
+            'form':formserializer.data,
+            'fields':serialized_data,
+            'sections': sectionserializer.data
+        }
+        # Respond with the aggregated serialized data
+        # print(serialized_data)
+        
+        return Response(final_res, status=status.HTTP_200_OK)
+
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -49,93 +172,117 @@ def hackathon_regiteration_form_get_specific(request, id):
 @api_view(['POST'])
 def hackathon_registeration_form_post(request,id):
     try:
-        if request.method == 'POST':
-            request_body = request.data
-            try:
-                hackathon = Hackathon.objects.get( _id = id)
-            except Exception as e:
-                return Response({'error':'Hackathon not found'},status = status.HTTP_404_NOT_FOUND)
-            
-            request_body["form"]["hackathon"] = str(hackathon._id)
-            
-            serializer_register_form = HackathonRegistrationFormSerializer(data=request_body["form"], many=False)
-            if serializer_register_form.is_valid():
+        form = None
+        body = request.data
+        form_input = body['form']
+        fields__input = body['fields']
+        sections = body['sections']
+        
+        # creating new form with the hackathon id 
+        form_input['hackathon'] = str(id)
+        print(form_input)
+        try:
+            # print('form key is ready for serialization')
+            form_serializer = HackathonRegistrationFormSerializer(data = form_input)
+            if form_serializer.is_valid():
+                # print('valid')
+                form = form_serializer.save()
                 
-                serializer_register_form.validated_data['hackathon'] = hackathon
-                print(serializer_register_form.validated_data['hackathon'])
-                new_form = serializer_register_form.save()
-                print(new_form)
-                for custom_field_data in request_body.get("custom_fields", []):
-                    custom_field_data['form'] = str(new_form._id)
-                    serializer_custom_fields = CustomFieldSerializer(data=custom_field_data)
-                    if serializer_custom_fields.is_valid():
-                        new_custom_field = serializer_custom_fields.save()
-                        if custom_field_data.get("short_answer"):
-                            short_answer_data = custom_field_data["short_answer"]
-                            short_answer_data["custom_field"] = str(new_custom_field)
-                            serializer_custom_short = ShortAnswerFieldSerializer(data=short_answer_data)
-                            if serializer_custom_short.is_valid():
-                                serializer_custom_short.save()
-                            else:
-                                return Response({"error": serializer_custom_short.errors}, status=status.HTTP_400_BAD_REQUEST)
-                        elif custom_field_data.get("long_answer"):
-                            long_answer_data = custom_field_data["long_answer"]
-                            long_answer_data["custom_field"] = str(new_custom_field)
-                            serializer_custom_large = LongAnswerFieldSerializer(data=long_answer_data)
-                            if serializer_custom_large.is_valid():
-                                serializer_custom_large.save()
-                            else:
-                                return Response({"error": serializer_custom_large.errors}, status=status.HTTP_400_BAD_REQUEST)
-                        elif custom_field_data.get("multiple_choice"):
-                            for option in custom_field_data.get("multiple_choice"):
-                                option["custom_field"] = str(new_custom_field)
-                                serializer_custom_multiple = MultipleChoiceFieldSerializer(data=option, many=False)
-                                if serializer_custom_multiple.is_valid():
-                                    serializer_custom_multiple.save()
-                                else:
-                                    return Response({"error": serializer_custom_multiple.errors}, status=status.HTTP_400_BAD_REQUEST)
-                    else:
-                        return Response({"error": serializer_custom_fields.errors}, status=status.HTTP_400_BAD_REQUEST)
+                # using type in fields for detecting type of field and serializing different fields
+                for i in fields__input:
+                    if i['type'] == 'long answer':
+                        i['form'] = form._id
+                        longserializer = LongAnswerFieldSerializer(data=i)
+                        if longserializer.is_valid():
+                            longserializer.save()
+                    elif i['type'] == 'short answer':
+                        print('short ', i['label'])
+                        i['form'] = form._id
+                        shortserializer = ShortAnswerFieldSerializer(data=i)
+                        if shortserializer.is_valid():
+                            shortserializer.save()
+                    elif i['type'] == 'radio':
+                        print('radio')
+                        i['form'] = form._id
+                        options= i['options']
+                        del i['options'] 
+                        multiplequestionserializer = MultipleChoiceFieldSerializer(data=i)
+                        if multiplequestionserializer.is_valid():
+                            field = multiplequestionserializer.save()
+                            for option in options:
+                                option['field'] = field._id 
+                                optionserializer = OptionSerializer(data=option)
+                                if optionserializer.is_valid():
+                                    op = optionserializer.save()
+                                    print(op.text)
+                    elif i['type'] == 'check':
+                        print('check')
+                        i['form'] = form._id
+                        options= i['options']
+                        del i['options'] 
+                        multiplequestionserializer = MultipleChoiceFieldSerializer(data=i)
+                        if multiplequestionserializer.is_valid():
+                            field = multiplequestionserializer.save()
+                            for option in options:
+                                option['field'] = field._id 
+                                optionserializer = OptionSerializer(data=option)
+                                if optionserializer.is_valid():
+                                    op = optionserializer.save()
+                                    print(op.text)
+                    elif i['type'] == 'toggle':
+                        print('toggle')
+                        i['form'] = form._id
+                        toggleserializer = ToggleSerializer(data=i)
+                        if toggleserializer.is_valid():
+                            toggleserializer.save()
+                    elif i['type'] == 'stepper':
+                        print('stepper')
+                        i['form'] = form._id
+                        stepperserializer = StepperSerializer(data=i)
+                        if stepperserializer.is_valid():
+                            stepperserializer.save()
+                    elif i['type'] == 'slider':
+                        print('slider')
+                        i['form'] = form._id
+                        sliderserializer = SliderSerializer(data=i)
+                        if sliderserializer.is_valid():
+                            sliderserializer.save()
+                    elif i['type'] == 'range':
+                        print('range')
+                        i['form'] = form._id
+                        sliderserializer = SliderSerializer(data=i)
+                        if sliderserializer.is_valid():
+                            sliderserializer.save()
+                    elif i['type'] == 'linear':
+                        print('linear')
+                        sliderserializer = SliderSerializer(data=i)
+                        if sliderserializer.is_valid():
+                            sliderserializer.save()
+                        i['form'] = form._id
+                    elif i['type'] == 'file':
+                        print('file')
+                        i['form'] = form._id
+                        sliderserializer = SliderSerializer(data=i)
+                        if sliderserializer.is_valid():
+                            sliderserializer.save()
+                    elif i['type'] == 'tag':
+                        i['form'] = form._id
+                        print('tag')
+                        sliderserializer = SliderSerializer(data=i)
+                        if sliderserializer.is_valid():
+                            sliderserializer.save()
+                print(form._id)
+                return Response({
+                    "message":"form is created",
+                    "form_id":form_serializer.data['_id']
+                    })
             else:
-                return Response({'error':serializer_register_form.errors}, status=status.HTTP_400_BAD_REQUEST)
-            try:
-                
-                hackathon.form_exist = True
-                hackathon.save()
-            except Exception as e:
-                return Response({'error':str(e)},status = status.HTTP_400_BAD_REQUEST)
-            return Response({'message':'Registeration form is created'},status=status.HTTP_201_CREATED)
-        else:
-            return Response({"error": "Invalid request method"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+                return Response('something is not working in validation',status=status.HTTP_400_BAD_REQUEST)
+            
+        except Exception as e:
+            print(e)
+            return Response(str(e),status=status.HTTP_400_BAD_REQUEST)
+            
     except Exception as e:
+        
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
-# Response
-# {
-#     "form": {
-#         "participant_name": "",
-#         "participant_email": "",
-#         "participant_phone": 0,
-#         "participant_gender": "",
-#     },
-#     "custom_fields": [
-#         {
-#             "short_answer": null,
-#             "long_answer": null,
-#             "multiple_choice": [
-#                 {
-#                     "option": "qwerty"
-#                 },
-#                 {
-#                     "option": "qwerty1"
-#                 }
-#             ],
-#             "label": "mcq",
-#             "type": "Multiple"
-#         }
-#     ]
-# }
-
-
-

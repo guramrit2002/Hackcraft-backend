@@ -1,8 +1,13 @@
 from django.db import models
 import uuid
-
+from django.utils import timezone
+import hashlib
+import secrets
 # Create your models here.
-
+USER_TYPE = (
+    ('student','student'),
+    ('professional','professional')
+)
 class Skill(models.Model):
     _id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
     skill_name = models.CharField(max_length=200,unique=True)
@@ -14,37 +19,36 @@ class Skill(models.Model):
 class UserProfile(models.Model):
     
     _id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
-    first_name = models.CharField(max_length=200)
-    last_name  = models.CharField(max_length=200)
-    email = models.EmailField(max_length=254,unique = True)
-    username  = models.CharField(max_length=250)
-    city = models.CharField(max_length=250)
-    organisation = models.CharField(max_length=250)
-    cousrse_name = models.CharField(max_length=250)
-    course_duration = models.IntegerField()
-    date_of_birth = models.DateField()
-    interest = models.CharField(max_length=250)
-    about  = models.CharField(max_length=3000)
-    education_qualification = models.CharField(max_length=100)
-    degree_type = models.CharField(max_length=300)
-    specialization = models.CharField(max_length=200)
-    degree_duration = models.IntegerField()
-    percentage = models.IntegerField()
-    university_name = models.CharField(max_length=500)
-    skill = models.ManyToManyField(Skill,default = None)
+    user_type = models.CharField(max_length=500,choices=USER_TYPE,null=True)
+    first_name = models.CharField(max_length=200, null=False)
+    last_name  = models.CharField(max_length=200, null=False)
+    email = models.EmailField(max_length=254,unique = True, null=False)
+    username  = models.CharField(max_length=250, default = ' ',blank=True)
+    gender = models.CharField(max_length=250,default = ' ',blank=True)
+    city = models.CharField(max_length=250,default = ' ',blank=True)
+    organisation = models.CharField(max_length=250,default = ' ',blank=True)
+    cousrse_name = models.CharField(max_length=250,default = ' ',blank=True)
+    course_end_year = models.IntegerField(default = -1,blank=True)
+    date_of_birth = models.DateField(blank=True, null=True,auto_now_add=False)
+    interest = models.JSONField(default={},blank=True)
+    about  = models.CharField(max_length=3000,default = ' ',blank=True)
+    education_qualification = models.CharField(max_length=100,default = ' ',blank=True)
+    specialization = models.CharField(max_length=200,default = ' ',blank=True)
+    percentage = models.IntegerField(default = -1,blank=True)
+    skill = models.ManyToManyField(Skill,default = None,blank=True)
     # social links
-    facebook = models.CharField(max_length=100)
-    x = models.CharField(max_length=50)
-    instagram = models.CharField(max_length=100)
-    linkedin = models.CharField(max_length=100)
-    github = models.CharField(max_length=100)
-    medium = models.CharField(max_length=100)
-    reddit = models.CharField(max_length=100)
-    slack = models.CharField(max_length=100)
-    dribble = models.CharField(max_length=100)
-    behance = models.CharField(max_length=100)
-    codepen = models.CharField(max_length=100)
-    figma = models.CharField(max_length=100)
+    facebook = models.CharField(max_length=100,default = ' ',blank=True)
+    x = models.CharField(max_length=50,default = ' ',blank=True)
+    instagram = models.CharField(max_length=100,default = ' ',blank=True)
+    linkedin = models.CharField(max_length=100,default = ' ',blank=True)
+    github = models.CharField(max_length=100,default = ' ',blank=True)
+    medium = models.CharField(max_length=100,default = ' ',blank=True)
+    reddit = models.CharField(max_length=100,default = ' ',blank=True)
+    slack = models.CharField(max_length=100,default = ' ',blank=True)
+    dribble = models.CharField(max_length=100,default = ' ',blank=True)
+    behance = models.CharField(max_length=100,default = ' ',blank=True)
+    codepen = models.CharField(max_length=100,default = ' ',blank=True)
+    figma = models.CharField(max_length=100,default = ' ',blank=True)
     
     def __str__(self) -> str:
         return f'{self.first_name} {self.last_name} profile'
@@ -66,3 +70,27 @@ class UserProfile(models.Model):
         return res_dict
     
 
+
+class OTP(models.Model):
+    user_email = models.EmailField(null=True)
+    otp = models.CharField(max_length=128)  # Store hashed OTP
+    salt = models.CharField(max_length=64)  # Store salt used for hashing
+    created_at = models.DateTimeField(default=timezone.now)
+    expiration_minutes = models.IntegerField(default=5)  # Adjust expiration time as needed
+
+    @classmethod
+    def  generate_otp(cls,email):
+        otp = str(secrets.randbelow(10**6)).zfill(6)  # Generate a 6-digit OTP
+        salt = secrets.token_hex(16)  # Generate a random salt
+        otp_hash = hashlib.sha256((otp + salt).encode()).hexdigest()  # Hash OTP with salt
+        otp_instance = cls.objects.create(otp=otp_hash, salt=salt,user_email = email)
+        return {'otp':otp,"otp_id":otp_instance.id}
+
+    def validate_otp(self, otp):
+        if self.is_expired():
+            return False
+        otp_hash = hashlib.sha256((otp + self.salt).encode()).hexdigest()  # Hash provided OTP with salt
+        return otp_hash == self.otp
+
+    def is_expired(self):
+        return timezone.now() > self.created_at + timezone.timedelta(minutes=self.expiration_minutes)

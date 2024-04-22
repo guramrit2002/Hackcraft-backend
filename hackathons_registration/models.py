@@ -10,46 +10,51 @@ class HackathonRegisterationForm(models.Model):
     _id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
     created = models.DateTimeField(auto_now_add=True)
     hackathon = models.ForeignKey(Hackathon,on_delete=models.CASCADE)
-    participant_name = models.CharField(max_length=100,blank=True)
-    participant_email = models.EmailField(max_length=254,blank=True)
-    participant_phone = models.IntegerField(null=True)
-    participant_gender = models.CharField(max_length=10,blank=True)
+    number_of_fields = models.IntegerField(null = True)
     
     def __str__(self):
         return str(self.hackathon)
-    
-class CustomField(models.Model):
-    _id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
-    created = models.DateTimeField(auto_now_add=True)
-    form = models.ForeignKey(HackathonRegisterationForm,on_delete=models.CASCADE)
-    label = models.CharField(max_length=100)
-    
-    def __str__(self):
-        return f'{str(self.label)} | {str(self.form)}'
-    
+
+
+
 class ShortAnswerField(models.Model):
+    
     _id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
     created = models.DateTimeField(auto_now_add=True)
-    custom_field = models.OneToOneField(CustomField, on_delete=models.CASCADE)
-    text = models.CharField(max_length=500)
+    form = models.ForeignKey(HackathonRegisterationForm, on_delete=models.CASCADE)
+    serial_number = models.IntegerField(null = True)
+    validation  = models.CharField(max_length = 200)
+    hint = models.CharField(max_length = 1000)
+    label = models.CharField(max_length=500)
+    error_text = models.CharField(max_length = 500)
+    required = models.BooleanField()
+    
     
     def __str__(self) -> str:
         return str(self._id)
 
+
 class LongAnswerField(models.Model):
+    
     _id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
     created = models.DateTimeField(auto_now_add=True)
-    custom_field = models.OneToOneField(CustomField, on_delete=models.CASCADE)
-    text = models.CharField(max_length=1000)
+    form = models.ForeignKey(HackathonRegisterationForm, on_delete=models.CASCADE)
+    serial_number = models.IntegerField(null = True)
+    word_limit = models.IntegerField()
+    label = models.CharField(max_length=1000)
+    error_text = models.CharField(max_length = 500)
+    required = models.BooleanField()
+    
     
     def __str__(self) -> str:
-        return str(self._id)
+        return str(self.label)
 
 class DropdownField(models.Model):
     _id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
     created = models.DateTimeField(auto_now_add=True)
-    custom_field = models.OneToOneField(CustomField, on_delete=models.CASCADE )
-    choices = models.TextField()
+    form = models.OneToOneField(HackathonRegisterationForm, on_delete=models.CASCADE )
+    serial_number = models.IntegerField(null = True)
+    choices = models.CharField(max_length=20)
     
     def getchoices(self):
         return[choice.strip() for choice in self.choices.split(',')]
@@ -58,10 +63,113 @@ class DropdownField(models.Model):
 
 
 class MultipleChoiceField(models.Model):
+    
     _id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
     created = models.DateTimeField(auto_now_add=True)
-    custom_field = models.ForeignKey(CustomField, on_delete=models.CASCADE)
-    option = models.CharField(max_length=500)
+    form = models.ForeignKey(HackathonRegisterationForm, on_delete=models.CASCADE)
+    serial_number = models.IntegerField(null = True)
+    error_text = models.CharField(max_length = 500)
+    type = models.CharField(max_length = 20)
+    label = models.CharField(max_length=200,null=True)
     
     def __str__(self) -> str:
         return str(self._id)
+
+class Options(models.Model):
+    _id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
+    created = models.DateTimeField(auto_now_add=True)
+    text = models.CharField(max_length = 500)
+    serial_number = models.IntegerField()
+    field = models.ForeignKey(MultipleChoiceField,on_delete = models.CASCADE)
+    def __str__(self) -> str:
+        return str(self._id)
+    
+class Toggle(models.Model):
+    
+    _id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
+    created = models.DateTimeField(auto_now_add=True)
+    form = models.ForeignKey(HackathonRegisterationForm, on_delete=models.CASCADE)
+    serial_number = models.IntegerField(null = True)
+    label = models.CharField(max_length=500)
+    error_text = models.CharField(max_length = 500)
+    
+    
+    def __str__(self) -> str:
+        return str(self._id)
+
+class Stepper(models.Model):
+    
+    _id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
+    created = models.DateTimeField(auto_now_add=True)
+    form = models.ForeignKey(HackathonRegisterationForm, on_delete=models.CASCADE)
+    label = models.CharField(max_length=500,null=True)
+    serial_number = models.IntegerField(null = True)
+    error_text = models.CharField(max_length = 500)
+    min_value = models.IntegerField()
+    max_value = models.IntegerField()
+    
+    def __str__(self)->str:
+        return str(self._id)
+    
+
+class Date(models.Model):
+    
+    _id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
+    created = models.DateTimeField(auto_now_add=True)
+    form = models.ForeignKey(HackathonRegisterationForm, on_delete=models.CASCADE)
+    serial_number = models.IntegerField(null = True)
+    label = models.CharField(max_length=100,null=True)
+    error_text = models.CharField(max_length = 500)
+    min_date = models.DateField()
+    max_date = models.DateField()
+    
+    def __str__(self)->str:
+        return str(self._id)
+    
+class Slider(models.Model):
+    
+    _id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
+    created = models.DateTimeField(auto_now_add=True)
+    form = models.ForeignKey(HackathonRegisterationForm, on_delete=models.CASCADE)
+    serial_number = models.IntegerField(null = True)
+    error_text = models.CharField(max_length = 500)
+    hint = models.CharField(max_length = 500)
+    labels = models.JSONField(default={})
+    label = models.CharField(max_length=200,null=True)
+    type = models.CharField(max_length = 10, null = True)
+    
+    def __str__(self)-> str:
+        return str(self._id)
+    
+class Fileupload(models.Model):
+    
+    _id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
+    created = models.DateTimeField(auto_now_add=True)
+    form = models.ForeignKey(HackathonRegisterationForm, on_delete=models.CASCADE)
+    serial_number = models.IntegerField(null = True)
+    error_text = models.CharField(max_length = 500)
+    hint = models.CharField(max_length = 500)
+    label = models.CharField(max_length = 500)
+    
+    def __str__(self)-> str:
+        return str(self._id)
+
+class Tags(models.Model):
+    
+    _id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
+    created = models.DateTimeField(auto_now_add=True)
+    form = models.ForeignKey(HackathonRegisterationForm, on_delete=models.CASCADE)
+    serial_number = models.IntegerField(null = True)
+    error_text = models.CharField(max_length = 500)
+    label = models.CharField(max_length = 500)
+    
+class Section(models.Model):
+    _id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
+    created = models.DateTimeField(auto_now_add=True)
+    form = models.ForeignKey(HackathonRegisterationForm, on_delete=models.CASCADE)
+    serial_number = models.IntegerField(null = True)
+    section_name = models.CharField(max_length = 500)
+    number_of_questions = models.IntegerField()
+    
+    def __str__(self) -> str:
+        return self.section_name

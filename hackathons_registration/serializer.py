@@ -1,6 +1,12 @@
-# serializers.py
 from rest_framework import serializers
-from .models import *
+from .models import (HackathonRegisterationForm, ShortAnswerField, LongAnswerField,
+                     DropdownField, MultipleChoiceField, Toggle, Stepper, Date,
+                     Slider, Fileupload, Tags,Section,Options)
+
+class HackathonRegistrationFormSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = HackathonRegisterationForm
+        fields = '__all__'
 
 class ShortAnswerFieldSerializer(serializers.ModelSerializer):
     class Meta:
@@ -12,26 +18,54 @@ class LongAnswerFieldSerializer(serializers.ModelSerializer):
         model = LongAnswerField
         fields = '__all__'
 
-class MultipleChoiceFieldSerializer(serializers.ModelSerializer):
+class DropdownFieldSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DropdownField
+        fields = '__all__'
 
+class MultipleChoiceFieldSerializer(serializers.ModelSerializer):
     class Meta:
         model = MultipleChoiceField
         fields = '__all__'
 
-
-class CustomFieldSerializer(serializers.ModelSerializer):
-    short_answer = ShortAnswerFieldSerializer(source='shortanswerfield', read_only=True)
-    long_answer = LongAnswerFieldSerializer(source='longanswerfield', read_only=True)
-    multiple_choice = MultipleChoiceFieldSerializer(source='multiplechoicefield_set', many=True,read_only=True)
-
+class OptionSerializer(serializers.ModelSerializer):
     class Meta:
-        model = CustomField
+        model = Options
+        fields = '__all__'
+class ToggleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Toggle
         fields = '__all__'
 
-class HackathonRegistrationFormSerializer(serializers.ModelSerializer):
-    custom_fields = CustomFieldSerializer(many=True, read_only=True)
-
+class StepperSerializer(serializers.ModelSerializer):
     class Meta:
-        model = HackathonRegisterationForm
+        model = Stepper
         fields = '__all__'
 
+class DateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Date
+        fields = '__all__'
+
+class SliderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Slider
+        fields = '__all__'
+
+class FileuploadSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Fileupload
+        fields = '__all__'
+
+class TagsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tags
+        fields = '__all__'
+
+
+class SectionSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = Section
+        fields = '__all__'
+        
