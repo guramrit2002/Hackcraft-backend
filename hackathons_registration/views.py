@@ -160,8 +160,6 @@ def hackathon_registration_form_get_specific(request, id):
             'fields':serialized_data,
             'sections': sectionserializer.data
         }
-        # Respond with the aggregated serialized data
-        # print(serialized_data)
         
         return Response(final_res, status=status.HTTP_200_OK)
 

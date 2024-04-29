@@ -18,3 +18,6 @@ class Members(models.Model):
     user = models.ForeignKey(UserProfile, on_delete = models.CASCADE)
     team = models.ForeignKey(Team,on_delete = models.CASCADE)
     is_leader = models.BooleanField()
+    
+    def __str__(self):
+        return str(self._id)
