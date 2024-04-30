@@ -34,7 +34,9 @@ INSTALLED_APPS = [
     'corsheaders',
     'hackathons_registration',
     'hackathon_template',
-    'user'
+    'user',
+    'team',
+    'user_participation'
 ]
 
 MIDDLEWARE = [

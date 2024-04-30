@@ -32,72 +32,53 @@ class FieldSerializer(Serializer):
         all_fields = long_fields + short_fields + multiple_fields + toggle_fields + \
                     stepper_fields + date_fields + slider_fields + range_fields + \
                     linear_fields + file_fields + tag_fields
-        print(HackathonRegisterationForm.objects.get(_id = data.get('form')).number_of_fields)
-        for i in range(1,HackathonRegisterationForm.objects.get(_id = data.get('form')).number_of_fields):
-            pass
-            for j in all_fields:
-                print()
-                if i == j['serial_number']:
-                    response.append(j)
-        print(len(response))
+                    
+        field_map = {field['serial_number']: field for field in all_fields}
+        print(field_map)
+        response = [field_map.get(i, {}) for i in range(1, HackathonRegisterationForm.objects.get(_id = data.get('form')).number_of_fields + 1)]
+
         return {"fields": response}
 class Teamserializer(ModelSerializer):
     class Meta:
         model = Team
         fields = '__all__'
 
-    def to_representation(self, data):
+    def to_representation(self, instance):
         try:
-            data_representation = super().to_representation(data)
-            if Members.objects.filter(team=data_representation.get('_id')).exists():
-                leader_present = False
-                num_of_leader = 0
-                members = Members.objects.filter(team=data_representation.get('_id'))
-                length_of_member = len(members)
+            data_representation = super().to_representation(instance)
+            team_id = data_representation.get('_id')
+            members_qs = Members.objects.filter(team=team_id)
+            members_count = members_qs.count()
+            leader_present = members_qs.filter(is_leader=True).count() == 1
 
-                for i in members:
-                    if i.is_leader:
-                        num_of_leader += 1
-                        leader_present = True
+            if members_count <= data_representation.get('number_of_member'):
+                if leader_present:
+                    serializer = Memberserializer(members_qs, many=True)
+                    serialized_members = serializer.data
+                    result = {'team': data_representation, 'members': []}
 
-                if leader_present and num_of_leader == 1 and length_of_member <= data_representation.get(
-                        'number_of_member'):
-
-                    serializer = Memberserializer(members, many=True)
-                    res = {'team': data_representation, 'members': [],"fields":[]}
-                    if serializer.data:
-                        for member_data in serializer.data:
-                            member = Members.objects.get(_id=member_data.get('_id'))
-                            application_for_participation = ParticipationSerializer(
-                                Participation.objects.filter(member=member),
-                                many=True
-                            )
-                            if application_for_participation.data:
-                                response = application_for_participation.data
-                                for application_data in response:
-                                    # Adjusted usage of FieldSerializer
-                                    print(application_data['_id'])
-                                    print('form',application_data['form'])
-                                    fields_serializer = FieldSerializer({'application_id': application_data['_id'],'form':application_data['form']})
-                                    fields_data = fields_serializer.data 
-                                    # long = LongSerializer(Longfieldinput.objects.filter(registeration=application_data.get('_id')), many=True).data
-                                    
-                                    # application_data['fields'].append(long)
-                                    application_data['user_id'] = member.user._id
-                                    application_data['is_leader'] = member.is_leader
-                                    application_data['additional_data'] = fields_data['fields']
-                                res['members'].append({member.user.email: response})
-                            else:
-                                res['members'].append({member.user.email: member.user._id})
-                        return res
-                    else:
-                        return None
-                elif not leader_present or num_of_leader > 1 or num_of_leader < 1:
-                    return {'error': "there is an issue with the leader"}
-                elif length_of_member > data_representation.get('number_of_member'):
-                    return {'error': "the number of members is full in this team"}
+                    for member_data in serialized_members:
+                        member = Members.objects.get(_id=member_data.get('_id'))
+                        participation_qs = Participation.objects.filter(member=member)
+                        application_data = []
+                        
+                        for application in participation_qs:
+                            fields_serializer = FieldSerializer({'application_id': application._id, 'form': application.form._id})
+                            fields_data = fields_serializer.data['fields']
+                            application_data.append({
+                                'application_id': str(application._id),
+                                'user_id': str(member.user._id),
+                                'is_leader': member.is_leader,
+                                'additional_data': fields_data
+                            })
+                        
+                        result['members'].append({member.user.email: application_data or str(member.user._id)})
+                    
+                    return result
+                else:
+                    return {'error': "There must be exactly one leader in the team."}
             else:
-                return None
+                return {'error': "The number of members is full in this team."}
         except Exception as err:
             print(err)
-            return err
+            return {'error': str(err)}

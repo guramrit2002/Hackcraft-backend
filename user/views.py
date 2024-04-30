@@ -111,13 +111,25 @@ def userprofileput(request, uid):
 
 
 @api_view(['GET'])
-def profilecompletepercentage(request,id):
+def profilecompletepercentage(request,email):
     try:
-        user = UserProfile.objects.get(_id = id)
-        print(user)
-    except:
-        print('An exception occurred')
-    return Response()
+        user = UserProfile.objects.get(email = email)
+        serializer = Userprofileserializer(user,many=False)
+        user_dictionary = serializer.data
+        keys = serializer.data.keys()
+        empty = []
+        number_of_nonempty_fields = 0
+        for key in keys:
+            if user_dictionary[key]:
+                number_of_nonempty_fields+=1
+            else:
+                empty.append(key)
+        return Response({
+            'empty fields':empty,
+            'profile_complete_percentage':(number_of_nonempty_fields*100)//len(keys)
+            },status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response(str(e),status=status.HTTP_400_BAD_REQUEST)        
 
 
 @api_view(['GET'])

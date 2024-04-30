@@ -1,4 +1,4 @@
-from rest_framework.serializers import ModelSerializer
+from rest_framework.serializers import ModelSerializer,Serializer
 from .models import UserProfile,Skill
 
 # start code from here 
