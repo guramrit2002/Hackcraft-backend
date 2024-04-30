@@ -35,13 +35,8 @@ INSTALLED_APPS = [
     'hackathons_registration',
     'hackathon_template',
     'user',
-<<<<<<< HEAD
-    'user_participation',
-    'team'
-=======
     'team',
     'user_participation'
->>>>>>> d869e56a3b74b3c7729dc0ad255a8b9171ad535d
 ]
 
 MIDDLEWARE = [
