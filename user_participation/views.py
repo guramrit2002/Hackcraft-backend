@@ -8,7 +8,7 @@ from team.serializers import Memberserializer,Teamserializer
 
 # Create your views here.
 @api_view(['GET'])
-def get_participation_by_hackathons(request,team_id,hackathon_id):
+def get_participation_by_hackathons(request,team_id):
     team = Team.objects.get(_id=team_id)
     serializer = Teamserializer(team,many = False)
     return Response(serializer.data,status=status.HTTP_200_OK)
