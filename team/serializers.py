@@ -4,7 +4,7 @@ from .models import Team,Members
 from user_participation.serializers import ParticipationSerializer 
 from user_participation.models import *
 from user_participation.serializers import *
-
+from .models import AnonymousUser
 class Memberserializer(ModelSerializer):
     
     class Meta:
@@ -66,8 +66,7 @@ class Teamserializer(ModelSerializer):
                             fields_serializer = FieldSerializer({'application_id': application._id, 'form': application.form._id})
                             fields_data = fields_serializer.data['fields']
                             application_data.append({
-                                'application_id': str(application._id),
-                                'user_id': str(member.user._id),
+                                'required_data':application,
                                 'is_leader': member.is_leader,
                                 'additional_data': fields_data
                             })
@@ -82,3 +81,9 @@ class Teamserializer(ModelSerializer):
         except Exception as err:
             print(err)
             return {'error': str(err)}
+        
+class AnonymousUserSerializer(ModelSerializer):
+    
+    class Meta :
+        model = AnonymousUser
+        fields = '__all__'

@@ -1,6 +1,7 @@
 from django.db import models
 from user.models import UserProfile
 import uuid
+
 # Create your models here.
 
 class Team(models.Model):
@@ -21,3 +22,14 @@ class Members(models.Model):
     
     def __str__(self):
         return str(self._id)
+    
+
+class AnonymousUser(models.Model):
+    
+    _id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
+    created_on = models.DateTimeField(auto_now_add=True)
+    email = models.EmailField()
+    team = models.ForeignKey(Team,on_delete=models.CASCADE)
+    
+    def __str__(self):
+        return self.email

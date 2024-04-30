@@ -12,3 +12,6 @@ def get_participation_by_hackathons(request,team_id):
     team = Team.objects.get(_id=team_id)
     serializer = Teamserializer(team,many = False)
     return Response(serializer.data,status=status.HTTP_200_OK)
+
+def post_participation(request,user_id):
+    return Response()

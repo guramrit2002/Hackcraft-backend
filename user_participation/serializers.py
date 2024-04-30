@@ -2,6 +2,8 @@ from rest_framework.serializers import ModelSerializer
 from rest_framework.serializers import SerializerMethodField
 from .models import *
 
+
+
 class ParticipationSerializer(ModelSerializer):
     
     class Meta:
@@ -11,47 +13,41 @@ class ParticipationSerializer(ModelSerializer):
 
 class LongSerializer(ModelSerializer):
     
-    long_field_label = SerializerMethodField()
+    field = SerializerMethodField()
     serial_number = SerializerMethodField()
     
     class Meta:
         model = Longfieldinput
-        fields = ['_id', 'created', 'registeration', 'long_field','long_field_label','text','serial_number']
+        fields = ['_id', 'created', 'registeration', 'long_field','field','text','serial_number']
         
-    def get_long_field_label(self, obj):
-        print("working")
-        print(obj.long_field)
+    def get_field(self, obj):
         if obj.long_field:
-            return obj.long_field.label
-        print('None')
+            return obj.long_field.label  # Assuming long_field is related to FieldModel
         return None
     
-    def get_serial_number(self,obj):
-        
+    def get_serial_number(self, obj):
         if obj.long_field:
-            return obj.long_field.serial_number
+            return obj.long_field.serial_number  # Assuming long_field is related to FieldModel
+        return None
 
 class ShortSerializer(ModelSerializer):
     
-    short_field_label = SerializerMethodField()
+    field = SerializerMethodField()
     serial_number = SerializerMethodField()
     
     class Meta:
         model = Shortfieldinput
         fields = '__all__'
     
-    def get_short_field_label(self, obj):
-        print("working")
-        print(obj.short_field)
+    def get_field(self, obj):
         if obj.short_field:
-            return obj.short_field.label
-        print('None')
+            return obj.short_field.label  # Assuming long_field is related to FieldModel
         return None
     
-    def get_serial_number(self,obj):
-        
+    def get_serial_number(self, obj):
         if obj.short_field:
-            return obj.short_field.serial_number
+            return obj.short_field.serial_number  # Assuming long_field is related to FieldModel
+        return None
 
 class DropdownfieldSerializer(ModelSerializer):
     
@@ -62,199 +58,175 @@ class DropdownfieldSerializer(ModelSerializer):
 
 class MultiplefieldSerializer(ModelSerializer):
     
-    multiple_field_label = SerializerMethodField()
+    field = SerializerMethodField()
     serial_number = SerializerMethodField()
     
     class Meta:
         model = Multiplefieldinput
         fields = '__all__'
         
-    def get_multiple_field_label(self, obj):
-        print("working")
-        print(obj.multiple_field)
+    def get_field(self, obj):
         if obj.multiple_field:
-            return obj.multiple_field.label
-        print('None')
+            return obj.multiple_field.label  # Assuming long_field is related to FieldModel
         return None
-
-    def get_serial_number(self,obj):
-        
+    
+    def get_serial_number(self, obj):
         if obj.multiple_field:
-            return obj.multiple_field.serial_number
-        
+            return obj.multiple_field.serial_number  # Assuming long_field is related to FieldModel
+        return None
 
 class TogglefieldSerializer(ModelSerializer):
     
-    toggle_field_label = SerializerMethodField()
+    field = SerializerMethodField()
     serial_number = SerializerMethodField()
     
     class Meta:
         model = Togglefieldinput
         fields = '__all__'
     
-    def get_toggle_field_label(self, obj):
-        print("working")
-        print(obj.toggle)
+    def get_field(self, obj):
         if obj.toggle:
-            return obj.toggle.label
-        print('None')
+            return obj.toggle.label  # Assuming long_field is related to FieldModel
         return None
     
-    def get_serial_number(self,obj):
-        
+    def get_serial_number(self, obj):
         if obj.toggle:
-            return obj.toggle.serial_number
+            return obj.toggle.serial_number  # Assuming long_field is related to FieldModel
+        return None
     
 class StepperSerializer(ModelSerializer):
     
-    stepper_field_label = SerializerMethodField()
+    field = SerializerMethodField()
     serial_number = SerializerMethodField()
     
     class Meta:
         model = Stepperfieldinput
         fields = '__all__'
     
-    def get_stepper_field_label(self, obj):
-        print("working")
-        print(obj.stepper_field)
+    def get_field(self, obj):
         if obj.stepper_field:
-            return obj.stepper_field.label
-        print('None')
+            return obj.stepper_field.label  # Assuming long_field is related to FieldModel
         return None
     
-    def get_serial_number(self,obj):
-        
+    def get_serial_number(self, obj):
         if obj.stepper_field:
-            return obj.stepper_field.serial_number
+            return obj.stepper_field.serial_number  # Assuming long_field is related to FieldModel
+        return None
         
 class DatefieldSeriallizer(ModelSerializer):
     
-    date_field_label = SerializerMethodField()
+    field = SerializerMethodField()
     serial_number = SerializerMethodField()
     
     class Meta:
         model = Datefieldinput
         fields = '__all__'
         
-    def get_date_field_label(self, obj):
-        print("working")
-        print(obj.date_field)
+    def get_field(self, obj):
         if obj.date_field:
-            return obj.date_field.label
-        print('None')
+            return obj.date_field.label  # Assuming long_field is related to FieldModel
         return None
     
-    def get_serial_number(self,obj):
-        
+    def get_serial_number(self, obj):
         if obj.date_field:
-            return obj.date_field.serial_number
+            return obj.date_field.serial_number  # Assuming long_field is related to FieldModel
+        return None
+        
 
 class SliderSerializer(ModelSerializer):
     
-    slider_field_label = SerializerMethodField()
+    field = SerializerMethodField()
     serial_number = SerializerMethodField()
     
     class Meta:
         model = Sliderfieldinput
         fields = '__all__'
     
-    def get_slider_field_label(self, obj):
-        print("working")
-        print(obj.slider)
+    def get_field(self, obj):
         if obj.slider:
-            return obj.slider.label
-        print('None')
+            return obj.slider.label  # Assuming long_field is related to FieldModel
         return None
     
-    def get_serial_number(self,obj):
-        
+    def get_serial_number(self, obj):
         if obj.slider:
-            return obj.slider.serial_number
+            return obj.slider.serial_number  # Assuming long_field is related to FieldModel
+        return None
+        
     
 class RangeSerializer(ModelSerializer):
     
-    range_field_label = SerializerMethodField()
+    field = SerializerMethodField()
     serial_number = SerializerMethodField()
     
     class Meta:
         model = RangefieldSlider
         fields = '__all__'
     
-    def get_range_field_label(self, obj):
-        print("working")
-        print(obj.slider)
+    def get_field(self, obj):
         if obj.slider:
-            return obj.slider.label
-        print('None')
+            return obj.slider.label  # Assuming long_field is related to FieldModel
         return None
     
-    def get_serial_number(self,obj):
-        
+    def get_serial_number(self, obj):
         if obj.slider:
-            return obj.slider.serial_number
+            return obj.slider.serial_number  # Assuming long_field is related to FieldModel
+        return None
+        
     
 class LinearSerializer(ModelSerializer):
     
-    linear_field_label = SerializerMethodField()
+    field = SerializerMethodField()
     serial_number = SerializerMethodField()
     
     class Meta:
         model = LinearfieldSlider
         fields = '__all__'
     
-    def get_linear_field_label(self, obj):
-        print("working")
-        print(obj.slider)
+    def get_field(self, obj):
         if obj.slider:
-            return obj.slider.label
-        print('None')
+            return obj.slider.label  # Assuming long_field is related to FieldModel
         return None
     
-    def get_serial_number(self,obj):
-        
+    def get_serial_number(self, obj):
         if obj.slider:
-            return obj.slider.serial_number
+            return obj.slider.serial_number  # Assuming long_field is related to FieldModel
+        return None
     
 class FileuploadSerializer(ModelSerializer):
     
-    file_field_label = SerializerMethodField()
+    field = SerializerMethodField()
     serial_number = SerializerMethodField()
     
     class Meta:
         model = Fileupload
         fields = '__all__'
     
-    def get_file_field_label(self, obj):
-        print("working")
-        print(obj.file_field)
+    def get_field(self, obj):
         if obj.file_field:
-            return obj.file_field.label
-        print('None')
+            return obj.file_field.label  # Assuming long_field is related to FieldModel
         return None
     
-    def get_serial_number(self,obj):
-        
+    def get_serial_number(self, obj):
         if obj.file_field:
-            return obj.file_field.serial_number
-
+            return obj.file_field.serial_number  # Assuming long_field is related to FieldModel
+        return None
+        
 class TagfieldSerializer(ModelSerializer):
     
-    tag_field_label = SerializerMethodField()
+    field = SerializerMethodField()
     serial_number = SerializerMethodField()
     
     class Meta:
         model = Tagfield
         fields = '__all__'
     
-    def get_tag_field_label(self, obj):
-        print("working")
-        print(obj.tags_field)
+    def get_field(self, obj):
         if obj.tags_field:
-            return obj.tags_field.label
-        print('None')
+            return obj.tags_field.label  # Assuming long_field is related to FieldModel
         return None
     
-    def get_serial_number(self,obj):
-        
+    def get_serial_number(self, obj):
         if obj.tags_field:
-            return obj.tags_field.serial_number
+            return obj.tags_field.serial_number  # Assuming long_field is related to FieldModel
+        return None
+        

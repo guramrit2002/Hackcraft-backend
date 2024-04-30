@@ -41,7 +41,7 @@ class Longfieldinput(models.Model):
         on_delete=models.CASCADE
     )
     # text data of long type i.e of 1000 or less char where space is a char 
-    text = models.CharField(max_length=1000)
+    input = models.CharField(max_length=1000)
     
     def __str__(self):
         return self.long_field.label
@@ -65,7 +65,7 @@ class Shortfieldinput(models.Model):
         on_delete=models.CASCADE
     )
     # text data of long type i.e of 500 or less char where space is a char 
-    text = models.CharField(
+    input = models.CharField(
         max_length=500
     )
 
@@ -83,7 +83,7 @@ class Dropdownfieldinput(models.Model):
         on_delete=models.CASCADE
     )
     # options selected 
-    options = models.JSONField(default={})
+    input = models.JSONField(default={})
     
 class Multiplefieldinput(models.Model):
     _id = models.UUIDField(
@@ -98,7 +98,7 @@ class Multiplefieldinput(models.Model):
         MultipleChoiceField, 
         on_delete=models.CASCADE)
     # options selected by user as json objects
-    options = models.JSONField(default={})
+    input = models.JSONField(default={})
 
 
 class Togglefieldinput(models.Model):
@@ -139,7 +139,7 @@ class Stepperfieldinput(models.Model):
         on_delete=models.CASCADE,
         null=True
     )
-    value = models.IntegerField()
+    input = models.IntegerField()
 
 class Datefieldinput(models.Model):
 
@@ -159,7 +159,7 @@ class Datefieldinput(models.Model):
         on_delete=models.CASCADE
     )
     # date between the set minimum and maximum date 
-    date = models.DateField()
+    input = models.DateField()
 
 
 class Sliderfieldinput(models.Model):
@@ -179,7 +179,7 @@ class Sliderfieldinput(models.Model):
         Slider,
         on_delete=models.CASCADE
     )
-    value = models.IntegerField()
+    input = models.IntegerField()
 
 
 class RangefieldSlider(models.Model):
@@ -199,8 +199,8 @@ class RangefieldSlider(models.Model):
         Slider,
         on_delete=models.CASCADE
     )
-    min_date = models.IntegerField()
-    max_date = models.IntegerField()
+    input1 = models.IntegerField()
+    input2 = models.IntegerField()
 
 
 class LinearfieldSlider(models.Model):
@@ -220,7 +220,7 @@ class LinearfieldSlider(models.Model):
         Slider,
         on_delete=models.CASCADE
     )
-    answer = models.IntegerField()
+    input = models.IntegerField()
 
 class Fileupload(models.Model):
     
@@ -240,7 +240,7 @@ class Fileupload(models.Model):
         on_delete=models.CASCADE,
         null=True
     )
-    answer = models.FileField(
+    input = models.FileField(
         upload_to='file_register', 
         max_length=100
         )
@@ -262,4 +262,4 @@ class Tagfield(models.Model):
         Tags,
         on_delete=models.CASCADE
     )
-    options = models.JSONField(default={})
+    input = models.JSONField(default={})

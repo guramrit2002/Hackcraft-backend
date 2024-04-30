@@ -71,7 +71,9 @@ class UserProfile(models.Model):
     
 
 
+
 class OTP(models.Model):
+    
     user_email = models.EmailField(null=True)
     otp = models.CharField(max_length=128)  # Store hashed OTP
     salt = models.CharField(max_length=64)  # Store salt used for hashing

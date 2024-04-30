@@ -132,6 +132,8 @@ def profilecompletepercentage(request,email):
         return Response(str(e),status=status.HTTP_400_BAD_REQUEST)        
 
 
+
+
 @api_view(['GET'])
 def isregistered(request,email):
     try:
