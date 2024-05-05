@@ -193,6 +193,7 @@ def hackathon_registration_form_get_specific(request, id):
 @api_view(['POST'])
 def hackathon_registeration_form_post(request,id):
     try:
+        print(request.data)
         form = None
         body = request.data
         form_input = body['form']
@@ -293,6 +294,13 @@ def hackathon_registeration_form_post(request,id):
                         if sliderserializer.is_valid():
                             sliderserializer.save()
                 print(form._id)
+                for i in sections:
+                    i['form'] = form._id
+                    section_serializer = SectionSerializer(data=i,many = False)
+                    if section_serializer.is_valid():
+                        section_serializer.save()
+                else:
+                    print(section_serializer.errors)
                 return Response({
                     "message":"form is created",
                     "form_id":form_serializer.data['_id']
@@ -305,5 +313,5 @@ def hackathon_registeration_form_post(request,id):
             return Response(str(e),status=status.HTTP_400_BAD_REQUEST)
             
     except Exception as e:
-        
+        print(e)
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
