@@ -41,30 +41,36 @@ def hackathon_registration_form_get_specific(request, id):
         serialized_data = []
 
         # from here fields start fetching and serializing
+        
         # Serialize LongAnswerField
         longfields = LongAnswerField.objects.filter(form=form)
         if longfields:
             data = LongAnswerFieldSerializer(longfields, many=True).data
             for i in data:
                 i['type'] = 'long answer' 
-            serialized_data+=(data)
+            for i in data:
+                serialized_data.append(i)
             
-
         # Serialize ShortAnswerField
         shortfields = ShortAnswerField.objects.filter(form=form)
         if shortfields:
             data= ShortAnswerFieldSerializer(shortfields, many=True).data
             for i in data:
                 i['type'] = 'short answer'
-            serialized_data+=(data)
-
+            for i in data:
+                serialized_data.append(i)
+        
         # Serialize Radio Field
         radiofields = MultipleChoiceField.objects.filter(form=form, type='radio')
         if serialized_data:
             data = MultipleChoiceFieldSerializer(radiofields, many=True).data
+            
             for i in data:
                 i['type'] = 'radio'
-            serialized_data+= data
+                i['options'] = OptionSerializer(Options.objects.filter(field = i['_id'], related='RADIO'),many = True).data
+            for i in data:
+                print(i)
+                serialized_data.append(i)
         
         # Serialize Check Field 
         checkfields = MultipleChoiceField.objects.filter(form=form, type='checkbox')
@@ -72,7 +78,10 @@ def hackathon_registration_form_get_specific(request, id):
             data = MultipleChoiceFieldSerializer(checkfields, many=True).data
             for i in data:
                 i['type'] = 'check'
-            serialized_data+=(data)
+                i['options'] = OptionSerializer(Options.objects.filter(field = i['_id'], related='CHECK'),many = True).data
+            for i in data:
+                print(i)
+                serialized_data.append(i)
 
         # Serialize toggle Field
         togglefields = Toggle.objects.filter(form=form)
@@ -80,7 +89,9 @@ def hackathon_registration_form_get_specific(request, id):
             data = ToggleSerializer(togglefields, many=True).data
             for i in data:
                 i['type'] = 'toggle'
-            serialized_data+=data
+            for i in data:
+                serialized_data.append(i)
+
 
         #Serialize Stepper Field 
         stepperfields = Stepper.objects.filter(form=form)
@@ -88,7 +99,9 @@ def hackathon_registration_form_get_specific(request, id):
             data = StepperSerializer(stepperfields, many=True).data
             for i in data:
                 i['type'] = 'stepper'
-            serialized_data+=data
+            for i in data:
+                serialized_data.append(i)
+
 
         # Serialize Date Field
         datefields = Date.objects.filter(form=form)
@@ -96,7 +109,9 @@ def hackathon_registration_form_get_specific(request, id):
             data = DateSerializer(datefields, many=True).data
             for i in data:
                 i['type'] = 'date'
-            serialized_data+=data
+            for i in data:
+                serialized_data.append(i)
+
 
         # Serialize Slider Field
         sliderfields = Slider.objects.filter(form=form, type='norange')
@@ -104,7 +119,9 @@ def hackathon_registration_form_get_specific(request, id):
             data = SliderSerializer(sliderfields, many=True).data
             for i in data:
                 i['type'] = 'slider'
-            serialized_data+=data
+            for i in data:
+                serialized_data.append(i)
+
 
         # Serialize range slider Field
         rangesliderfields = Slider.objects.filter(form=form, type='range')
@@ -112,7 +129,9 @@ def hackathon_registration_form_get_specific(request, id):
             data = SliderSerializer(rangesliderfields, many=True).data
             for i in data:
                 i['type'] = 'range'
-            serialized_data+=data
+            for i in data:
+                serialized_data.append(i)
+
 
         # Serialize linear slider field
         linearsliderfields = Slider.objects.filter(form=form, type='linear')
@@ -120,7 +139,9 @@ def hackathon_registration_form_get_specific(request, id):
             data = SliderSerializer(linearsliderfields, many=True).data
             for i in data:
                 i['type'] = 'linear'
-            serialized_data+=data
+            for i in data:
+                serialized_data.append(i)
+
 
         # Serialize File Upload Field
         fileuploadfields = Fileupload.objects.filter(form=form)
@@ -128,7 +149,9 @@ def hackathon_registration_form_get_specific(request, id):
             data = FileuploadSerializer(fileuploadfields, many=True).data
             for i in data:
                 i['type'] = 'file'
-            serialized_data+=data
+            for i in data:
+                serialized_data.append(i)
+
 
         # Serialized Tag Field
         tagsfields = Tags.objects.filter(form=form)
@@ -136,20 +159,19 @@ def hackathon_registration_form_get_specific(request, id):
             data = TagsSerializer(tagsfields, many=True).data
             for i in data :
                 i['type'] = 'tag'
-            serialized_data+=data
+            for i in data:
+                serialized_data.append(i)
+
             
         sorted_fields = []
-        print(form.number_of_fields)
-        for i in range(form.number_of_fields):
-            try:
-                print(serialized_data[i]['serial_number'])
-                for j in serialized_data:
-                    if i+1 == j['serial_number']:
-                        sorted_fields.append(serialized_data[i])
-            except Exception as e:
-                if str(e) != "list index out of range":
-                    return Response({str(e)})
-        print(sorted_fields)
+        
+        data = serialized_data
+        # print(data)
+        for i in range(1,form.number_of_fields):
+            for j in data:
+                if j['serial_number'] == i :
+                    sorted_fields.append(j)                    
+        
         #from here sections will be fetched and serialized 
         sections = Section.objects.filter(form = form)
         sectionserializer = SectionSerializer(sections,many = True)
@@ -157,13 +179,14 @@ def hackathon_registration_form_get_specific(request, id):
         
         final_res = {
             'form':formserializer.data,
-            'fields':serialized_data,
+            'fields':sorted_fields,
             'sections': sectionserializer.data
         }
         
         return Response(final_res, status=status.HTTP_200_OK)
 
     except Exception as e:
+        print(e)
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 

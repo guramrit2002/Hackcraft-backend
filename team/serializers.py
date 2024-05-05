@@ -4,7 +4,7 @@ from .models import Team,Members
 from user_participation.serializers import ParticipationSerializer 
 from user_participation.models import *
 from user_participation.serializers import *
-from .models import AnonymousUser
+# from .models import AnonymousUser
 class Memberserializer(ModelSerializer):
     
     class Meta:
@@ -82,8 +82,3 @@ class Teamserializer(ModelSerializer):
             print(err)
             return {'error': str(err)}
         
-class AnonymousUserSerializer(ModelSerializer):
-    
-    class Meta :
-        model = AnonymousUser
-        fields = '__all__'

@@ -8,7 +8,8 @@ urlpatterns = [
     path('',include('hackathons_registration.urls')),
     path('',include('user.urls')),
     path('team/',include('team.urls')),
-    path('participation/',include('user_participation.urls'))
+    path('participation/',include('user_participation.urls')),
+    path('anonymous/',include('anonymous.urls'))
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
