@@ -33,7 +33,7 @@ def teampost(request):
             
         except Team.DoesNotExist:
             team_serializer = TeamSerializer(data = team_data,many = False)
-            if team_serializer.is_valid():
+            if team_serializer.is_valid() and leader:
                 team_serializer.save()
                 team_data = team_serializer.data
                 team_id = team_data['_id']

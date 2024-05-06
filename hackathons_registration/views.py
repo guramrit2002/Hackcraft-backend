@@ -212,12 +212,12 @@ def hackathon_registeration_form_post(request,id):
                 
                 # using type in fields for detecting type of field and serializing different fields
                 for i in fields__input:
-                    if i['type'] == 'long answer':
+                    if i['type'] == 'longAnswer':
                         i['form'] = form._id
                         longserializer = LongAnswerFieldSerializer(data=i)
                         if longserializer.is_valid():
                             longserializer.save()
-                    elif i['type'] == 'short answer':
+                    elif i['type'] == 'shortAnswer':
                         print('short ', i['label'])
                         i['form'] = form._id
                         shortserializer = ShortAnswerFieldSerializer(data=i)
@@ -237,7 +237,7 @@ def hackathon_registeration_form_post(request,id):
                                 if optionserializer.is_valid():
                                     op = optionserializer.save()
                                     print(op.text)
-                    elif i['type'] == 'check':
+                    elif i['type'] == 'checkbox':
                         print('check')
                         i['form'] = form._id
                         options= i['options']
