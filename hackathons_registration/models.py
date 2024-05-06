@@ -174,6 +174,15 @@ class Tags(models.Model):
     label = models.CharField(max_length = 500)
     required = models.BooleanField(default=False)
     
+class TagOptions(models.Model):
+    _id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
+    created = models.DateTimeField(auto_now_add=True)
+    text = models.CharField(max_length = 500)
+    serial_number = models.IntegerField()
+    field = models.ForeignKey(Tags,on_delete = models.CASCADE)
+    def __str__(self) -> str:
+        return str(self._id)
+    
 class Section(models.Model):
     _id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
     created = models.DateTimeField(auto_now_add=True)
@@ -185,3 +194,4 @@ class Section(models.Model):
     
     def __str__(self) -> str:
         return self.section_name
+    

@@ -15,4 +15,4 @@ admin.site.register(Tags)
 admin.site.register(Section)
 admin.site.register(Options)
 admin.site.register(Slider)
-
+admin.site.register(TagOptions)

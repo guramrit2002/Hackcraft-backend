@@ -47,7 +47,7 @@ def hackathon_registration_form_get_specific(request, id):
         if longfields:
             data = LongAnswerFieldSerializer(longfields, many=True).data
             for i in data:
-                i['type'] = 'long answer' 
+                i['type'] = 'longAnswer' 
             for i in data:
                 serialized_data.append(i)
             
@@ -56,10 +56,19 @@ def hackathon_registration_form_get_specific(request, id):
         if shortfields:
             data= ShortAnswerFieldSerializer(shortfields, many=True).data
             for i in data:
-                i['type'] = 'short answer'
+                i['type'] = 'shortAnswer'
             for i in data:
                 serialized_data.append(i)
-        
+                
+        # Serialize PhoneNumberField
+        shortfields = ShortAnswerField.objects.filter(form=form)
+        if shortfields:
+            data= ShortAnswerFieldSerializer(shortfields, many=True).data
+            for i in data:
+                i['type'] = 'phoneNumber'
+            for i in data:
+                serialized_data.append(i)
+                
         # Serialize Radio Field
         radiofields = MultipleChoiceField.objects.filter(form=form, type='radio')
         if serialized_data:
@@ -77,7 +86,7 @@ def hackathon_registration_form_get_specific(request, id):
         if checkfields:
             data = MultipleChoiceFieldSerializer(checkfields, many=True).data
             for i in data:
-                i['type'] = 'check'
+                i['type'] = 'checkbox'
                 i['options'] = OptionSerializer(Options.objects.filter(field = i['_id'], related='CHECK'),many = True).data
             for i in data:
                 print(i)
@@ -159,6 +168,9 @@ def hackathon_registration_form_get_specific(request, id):
             data = TagsSerializer(tagsfields, many=True).data
             for i in data :
                 i['type'] = 'tag'
+                options = TagOptions.objects.filter(field = i['_id'])
+                option_serializer = TagOptionSerializer(options,many = True)
+                i['options'] = option_serializer.data
             for i in data:
                 serialized_data.append(i)
 
@@ -223,34 +235,36 @@ def hackathon_registeration_form_post(request,id):
                         shortserializer = ShortAnswerFieldSerializer(data=i)
                         if shortserializer.is_valid():
                             shortserializer.save()
+                    elif i['type'] == 'phoneNumber':
+                        print('short ', i['label'])
+                        i['form'] = form._id
+                        shortserializer = ShortAnswerFieldSerializer(data=i)
+                        if shortserializer.is_valid():
+                            shortserializer.save()
                     elif i['type'] == 'radio':
                         print('radio')
                         i['form'] = form._id
-                        options= i['options']
-                        del i['options'] 
                         multiplequestionserializer = MultipleChoiceFieldSerializer(data=i)
                         if multiplequestionserializer.is_valid():
                             field = multiplequestionserializer.save()
-                            for option in options:
+                            for option in i['options']:
                                 option['field'] = field._id 
                                 optionserializer = OptionSerializer(data=option)
                                 if optionserializer.is_valid():
-                                    op = optionserializer.save()
-                                    print(op.text)
+                                    optionserializer.save()
+                                    print(optionserializer.data.get('text'))
                     elif i['type'] == 'checkbox':
                         print('check')
                         i['form'] = form._id
-                        options= i['options']
-                        del i['options'] 
                         multiplequestionserializer = MultipleChoiceFieldSerializer(data=i)
                         if multiplequestionserializer.is_valid():
                             field = multiplequestionserializer.save()
-                            for option in options:
+                            for option in i['options']:
                                 option['field'] = field._id 
                                 optionserializer = OptionSerializer(data=option)
                                 if optionserializer.is_valid():
-                                    op = optionserializer.save()
-                                    print(op.text)
+                                    optionserializer.save()
+                                    print(optionserializer.data.get('text'))
                     elif i['type'] == 'toggle':
                         print('toggle')
                         i['form'] = form._id
@@ -289,18 +303,26 @@ def hackathon_registeration_form_post(request,id):
                             sliderserializer.save()
                     elif i['type'] == 'tag':
                         i['form'] = form._id
+                        
                         print('tag')
-                        sliderserializer = SliderSerializer(data=i)
-                        if sliderserializer.is_valid():
-                            sliderserializer.save()
+                        tagserializer = TagsSerializer(data=i)
+                        if tagserializer.is_valid():
+                            tagserializer.save()
+                            for option in i['options']:
+                                option['field'] = tagserializer.data.get('_id') 
+                                tagoptionserializer = TagOptionSerializer(data=option)
+                                if tagoptionserializer.is_valid():
+                                    tagoptionserializer.save()
+                                    print(tagserializer.data.get('text'))
+                            
                 print(form._id)
                 for i in sections:
                     i['form'] = form._id
                     section_serializer = SectionSerializer(data=i,many = False)
                     if section_serializer.is_valid():
                         section_serializer.save()
-                else:
-                    print(section_serializer.errors)
+                    else:
+                        print(section_serializer.errors)
                 return Response({
                     "message":"form is created",
                     "form_id":form_serializer.data['_id']

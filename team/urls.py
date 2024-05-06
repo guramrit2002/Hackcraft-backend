@@ -1,7 +1,8 @@
 from django.urls import path
-from .views import teampost
+from .views import teampost,memberpost
 
 urlpatterns = [
-    path('',teampost)
+    path('',teampost),
+    path('member',memberpost)
 ]
 

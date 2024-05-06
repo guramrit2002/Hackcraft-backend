@@ -59,3 +59,30 @@ def teampost(request):
     except Exception as e:
         print(e)
         return Response(str(e))
+    
+@api_view(['POST'])
+def memberpost(request):
+    try:
+        body = request.data
+        user_email = body['user']
+        user = UserProfile.objects.get(email = user_email)._id
+        body['user'] = user
+        body['is_leader'] = False
+        member_serializer = Memberserializer(data=body,many = False)
+        if member_serializer.is_valid():
+            member_serializer.save()
+            print(member_serializer.data)
+            return Response(
+                {
+                    "message":"member is created",
+                    "member_id": member_serializer.data['_id']
+                },
+                status=status.HTTP_200_OK)
+        else:
+            return Response(member_serializer.errors)
+    except UserProfile.DoesNotExist:
+        print('user does not exist')
+        return Response('user does not exist',status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        print(e)
+        return Response(str(e),status=status.HTTP_400_BAD_REQUEST)

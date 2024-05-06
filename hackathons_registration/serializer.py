@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import (HackathonRegisterationForm, ShortAnswerField, LongAnswerField,
                      DropdownField, MultipleChoiceField, Toggle, Stepper, Date,
-                     Slider, Fileupload, Tags,Section,Options)
+                     Slider, Fileupload, Tags,Section,Options,TagOptions)
 
 class HackathonRegistrationFormSerializer(serializers.ModelSerializer):
     class Meta:
@@ -62,7 +62,11 @@ class TagsSerializer(serializers.ModelSerializer):
         model = Tags
         fields = '__all__'
 
-
+class TagOptionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TagOptions
+        fields = '__all__'
+        
 class SectionSerializer(serializers.ModelSerializer):
     
     class Meta:
