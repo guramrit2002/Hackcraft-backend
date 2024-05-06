@@ -26,11 +26,9 @@ def teampost(request):
         leader = body.get('leader')
         try:
             team = Team.objects.get(team_name = team_data['team_name'])
-            
             return Response({
-                'message':'Team name is already taken'
-            },status=status.HTTP_400_BAD_REQUEST)
-            
+                    'message':'Team name is already taken'
+                },status=status.HTTP_400_BAD_REQUEST)
         except Team.DoesNotExist:
             team_serializer = TeamSerializer(data = team_data,many = False)
             if team_serializer.is_valid() and leader:
@@ -55,11 +53,11 @@ def teampost(request):
                 return Response(team_serializer.errors)
         except Exception as e:
             print(e)
-            return Response(str(e))
+            return Response(str(e),status=status.HTTP_400_BAD_REQUEST)
     except Exception as e:
         print(e)
-        return Response(str(e))
-    
+        return Response(str(e),status=status.HTTP_400_BAD_REQUEST)
+
 @api_view(['POST'])
 def memberpost(request):
     try:

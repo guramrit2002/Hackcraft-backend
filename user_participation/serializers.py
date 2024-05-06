@@ -18,7 +18,7 @@ class LongSerializer(ModelSerializer):
     
     class Meta:
         model = Longfieldinput
-        fields = ['_id', 'created', 'registeration', 'long_field','field','text','serial_number']
+        fields = ['_id', 'created', 'registeration', 'long_field','field','input','serial_number']
         
     def get_field(self, obj):
         if obj.long_field:

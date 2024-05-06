@@ -34,6 +34,7 @@ def hackathon_regiteration_form_get(request):
 @api_view(['GET'])
 def hackathon_registration_form_get_specific(request, id):
     try:
+        
         # hakathon registerations form fetching using hackathon id
         form = get_object_or_404(HackathonRegisterationForm, hackathon___id=id)
         formserializer = HackathonRegistrationFormSerializer(form)
@@ -61,13 +62,13 @@ def hackathon_registration_form_get_specific(request, id):
                 serialized_data.append(i)
                 
         # Serialize PhoneNumberField
-        shortfields = ShortAnswerField.objects.filter(form=form)
-        if shortfields:
-            data= ShortAnswerFieldSerializer(shortfields, many=True).data
-            for i in data:
-                i['type'] = 'phoneNumber'
-            for i in data:
-                serialized_data.append(i)
+        # shortfields = ShortAnswerField.objects.filter(form=form)
+        # if shortfields:
+        #     data= ShortAnswerFieldSerializer(shortfields, many=True).data
+        #     for i in data:
+        #         i['type'] = 'phoneNumber'
+        #     for i in data:
+        #         serialized_data.append(i)
                 
         # Serialize Radio Field
         radiofields = MultipleChoiceField.objects.filter(form=form, type='radio')
@@ -123,7 +124,7 @@ def hackathon_registration_form_get_specific(request, id):
 
 
         # Serialize Slider Field
-        sliderfields = Slider.objects.filter(form=form, type='norange')
+        sliderfields = Slider.objects.filter(form=form, type='slider')
         if sliderfields:
             data = SliderSerializer(sliderfields, many=True).data
             for i in data:
@@ -211,31 +212,24 @@ def hackathon_registeration_form_post(request,id):
         form_input = body['form']
         fields__input = body['fields']
         sections = body['sections']
-        
         # creating new form with the hackathon id 
         form_input['hackathon'] = str(id)
-        print(form_input)
         try:
-            # print('form key is ready for serialization')
+            print('form key is ready for serialization')
             form_serializer = HackathonRegistrationFormSerializer(data = form_input)
             if form_serializer.is_valid():
                 # print('valid')
                 form = form_serializer.save()
-                
+                print(form)
                 # using type in fields for detecting type of field and serializing different fields
                 for i in fields__input:
+                    print(i['type'])
                     if i['type'] == 'longAnswer':
                         i['form'] = form._id
                         longserializer = LongAnswerFieldSerializer(data=i)
                         if longserializer.is_valid():
                             longserializer.save()
                     elif i['type'] == 'shortAnswer':
-                        print('short ', i['label'])
-                        i['form'] = form._id
-                        shortserializer = ShortAnswerFieldSerializer(data=i)
-                        if shortserializer.is_valid():
-                            shortserializer.save()
-                    elif i['type'] == 'phoneNumber':
                         print('short ', i['label'])
                         i['form'] = form._id
                         shortserializer = ShortAnswerFieldSerializer(data=i)
