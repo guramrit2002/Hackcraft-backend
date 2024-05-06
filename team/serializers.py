@@ -38,7 +38,7 @@ class FieldSerializer(Serializer):
         response = [field_map.get(i, {}) for i in range(1, HackathonRegisterationForm.objects.get(_id = data.get('form')).number_of_fields + 1)]
 
         return {"fields": response}
-class Teamserializer(ModelSerializer):
+class TeamGetserializer(ModelSerializer):
     class Meta:
         model = Team
         fields = '__all__'
@@ -82,3 +82,8 @@ class Teamserializer(ModelSerializer):
             print(err)
             return {'error': str(err)}
         
+        
+class TeamSerializer(ModelSerializer):
+    class Meta:
+        model = Team
+        fields = '__all__'

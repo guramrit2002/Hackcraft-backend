@@ -54,7 +54,8 @@ class Hackathon(models.Model):
     facebook = models.CharField(max_length = 200,null = True,blank = True,default= '')
     twitter = models.CharField(max_length = 200,null = True,blank = True,default= '')
     linkedin = models.CharField(max_length = 200,null = True,blank = True,default= '')
-    
+    # added now 
+    total_number_rounds = models.IntegerField(null=True)
     def __str__(self) -> str:
         return str(self.name)
 

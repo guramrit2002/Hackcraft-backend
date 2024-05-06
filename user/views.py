@@ -6,6 +6,9 @@ from firebase_admin import auth
 from .models import UserProfile,Skill,OTP
 from .serializers import Userprofileserializer,Userskill
 from django.core.mail import send_mail
+from hackathon_template.models import Hackathon
+from hackathon_template.serializers import HackathonSerializer
+from user_participation.models import Participation
 
 @api_view(['GET'])
 def userProfile(request,uid):
@@ -109,6 +112,11 @@ def userprofileput(request, uid):
     else:
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+# def userhackathonsfilter(request,filter):
+#     = request.query_params.get('')
+#     latitude= request.query_params.get('')
+#     radius = request.query_params.get('')
+#     return Response(hackathon_serializer.data,status=status.HTTP_200_OK)
 
 @api_view(['GET'])
 def profilecompletepercentage(request,email):

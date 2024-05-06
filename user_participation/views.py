@@ -4,13 +4,13 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from .serializers import ParticipationSerializer
 from hackathons_registration.serializer import SectionSerializer
-from team.serializers import Memberserializer,Teamserializer
+from team.serializers import TeamGetserializer
 
 # Create your views here.
 @api_view(['GET'])
 def get_participation_by_hackathons(request,team_id):
     team = Team.objects.get(_id=team_id)
-    serializer = Teamserializer(team,many = False)
+    serializer = TeamGetserializer(team,many = False)
     return Response(serializer.data,status=status.HTTP_200_OK)
 
 def post_participation(request,user_id):

@@ -9,5 +9,5 @@ urlpatterns = [
         path('otp/<email>',otpsend),
         path('otprecieve',otprecieve),
         path('otpreset/<email>',otpreset),
-        path('profilecomplete/<email>',profilecompletepercentage)
+        path('profilecomplete/<email>',profilecompletepercentage),
     ]
