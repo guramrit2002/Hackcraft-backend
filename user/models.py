@@ -49,6 +49,7 @@ class UserProfile(models.Model):
     behance = models.CharField(max_length=100,default = ' ',blank=True)
     codepen = models.CharField(max_length=100,default = ' ',blank=True)
     figma = models.CharField(max_length=100,default = ' ',blank=True)
+    phone = models.CharField(max_length=10,null=True)
     
     def __str__(self) -> str:
         return f'{self.first_name} {self.last_name} profile'
