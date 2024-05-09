@@ -4,19 +4,14 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status
 from user.models import UserProfile
-from .serializers import TeamSerializer,Memberserializer
+from .serializers import TeamSerializer,Memberserializer,TeamGetserializer
 # from user.models import *
 
-# @api_view(['GET'])
-# def teamsget(request):
-#     try:
-#         teams = Team.objects.all()
-#         serializer = Teamserializer(teams,many = True)
-#         data = [team_data for team_data in serializer.data if team_data is not None]
-#         return Response(data,status=status.HTTP_200_OK)
-#     except Exception as e:
-#         print(e)
-#         return Response(str(e),status=status.HTTP_400_BAD_REQUEST)
+@api_view(['GET'])
+def get_participation_by_hackathons(request,team_id):
+    team = Team.objects.get(_id=team_id)
+    serializer = TeamGetserializer(team,many = False)
+    return Response(serializer.data,status=status.HTTP_200_OK)
 
 @api_view(['POST'])
 def teampost(request):

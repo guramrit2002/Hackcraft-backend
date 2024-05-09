@@ -1,7 +1,6 @@
 from rest_framework.serializers import ModelSerializer
 from rest_framework.serializers import Serializer
 from .models import Team,Members
-from user_participation.serializers import ParticipationSerializer 
 from user_participation.models import *
 from user_participation.serializers import *
 # from .models import AnonymousUser
@@ -29,14 +28,36 @@ class FieldSerializer(Serializer):
         tag_fields = TagfieldSerializer(Tagfield.objects.filter(registeration=app_id), many=True).data
         response = []
         # Concatenate all the serialized data into a single list
-        all_fields = long_fields + short_fields + multiple_fields + toggle_fields + \
-                    stepper_fields + date_fields + slider_fields + range_fields + \
-                    linear_fields + file_fields + tag_fields
-                    
+        all_fields = []
+        if long_fields :
+            all_fields+=long_fields
+        elif short_fields : 
+            all_fields += short_fields
+        elif multiple_fields:
+            all_fields+=multiple_fields
+        elif toggle_fields:
+            all_fields+=toggle_fields
+        elif stepper_fields:
+            all_fields+=stepper_fields
+        elif date_fields:
+            all_fields+=date_fields
+        elif slider_fields:
+            all_fields += slider_fields
+        elif range_fields:
+            all_fields+=range_fields
+        elif linear_fields:
+            all_fields+=linear_fields
+        elif file_fields:
+            all_fields+=file_fields
+        elif tag_fields:
+            all_fields+=tag_fields
         field_map = {field['serial_number']: field for field in all_fields}
-        print(field_map)
-        response = [field_map.get(i, {}) for i in range(1, HackathonRegisterationForm.objects.get(_id = data.get('form')).number_of_fields + 1)]
-
+        for i in range(1, len(field_map.keys())+1):
+            print('i : ',i)
+            print('serial_number',field_map.get(i))
+            if field_map.get(i):
+                print('field with serial number : ',field_map.get(i))
+                response.append(field_map.get(i))
         return {"fields": response}
 class TeamGetserializer(ModelSerializer):
     class Meta:
@@ -56,23 +77,23 @@ class TeamGetserializer(ModelSerializer):
                     serializer = Memberserializer(members_qs, many=True)
                     serialized_members = serializer.data
                     result = {'team': data_representation, 'members': []}
-
                     for member_data in serialized_members:
-                        member = Members.objects.get(_id=member_data.get('_id'))
-                        participation_qs = Participation.objects.filter(member=member)
-                        application_data = []
+                        participation = Participation.objects.get(member=member_data.get('_id'))
                         
-                        for application in participation_qs:
-                            fields_serializer = FieldSerializer({'application_id': application._id, 'form': application.form._id})
-                            fields_data = fields_serializer.data['fields']
-                            application_data.append({
-                                'required_data':application,
-                                'is_leader': member.is_leader,
+                        participation_serializer = ParticipationSerializer(participation,many=False)
+                        participation_qs = participation_serializer.data
+                        application_data=[]
+                        fields_serializer = FieldSerializer({'application_id': participation_qs.get('_id'), 'form': participation_qs.get('form')})
+                        fields_data = fields_serializer.data['fields']
+
+                        application_data.append({
+                                'required_data': participation_qs,
+                                'is_leader': member_data.get('is_leader'),
                                 'additional_data': fields_data
                             })
-                        
-                        result['members'].append({member.user.email: application_data or str(member.user._id)})
-                    
+                        email = UserProfile.objects.get(_id = member_data.get('user')).email
+                        result['members'].append({email: application_data or str(member_data.user._id)})
+                    print('result',result)
                     return result
                 else:
                     return {'error': "There must be exactly one leader in the team."}

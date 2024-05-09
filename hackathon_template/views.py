@@ -145,4 +145,7 @@ def defaultpost(request):
             return Response({'error':'Response is required'},status=status.HTTP_400_BAD_REQUEST)
         
     
-
+# @api_view(['POST'])
+# def postviewcount(request):
+#     try:
+        

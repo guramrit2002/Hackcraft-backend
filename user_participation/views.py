@@ -8,11 +8,7 @@ from team.serializers import TeamGetserializer
 from .serializers import *
 
 # Create your views here.
-@api_view(['GET'])
-def get_participation_by_hackathons(request,team_id):
-    team = Team.objects.get(_id=team_id)
-    serializer = TeamGetserializer(team,many = False)
-    return Response(serializer.data,status=status.HTTP_200_OK)
+
 
 @api_view(['POST'])
 def post_participation(request,member_id):

@@ -1,6 +1,7 @@
 from django.db import models
 from hackathons_registration.models import *
 from django.core.validators import MinValueValidator, MaxValueValidator
+from user.models import UserProfile
 import uuid
 # Create your models here.
 
@@ -70,6 +71,17 @@ class ThemeHackathon(models.Model):
     
     def __str__(self) -> str:
         return self.theme
+    
+class HackathonViews(models.Model):
+    _id = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, editable=False, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(UserProfile,on_delete=models.CASCADE)
+    view = models.PositiveIntegerField()
+    
+    def __str__(self):
+        return self.user.email
+    
 class Round(models.Model):
     _id = models.UUIDField(
         primary_key=True, default=uuid.uuid4, editable=False, unique=True)
