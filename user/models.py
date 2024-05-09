@@ -36,7 +36,7 @@ class UserProfile(models.Model):
     specialization = models.CharField(max_length=200,default = ' ',blank=True)
     percentage = models.IntegerField(default = -1,blank=True)
     skill = models.ManyToManyField(Skill,default = None,blank=True)
-    degree = models.CharField(max_length=200,null=True)
+    degree = models.CharField(max_length=200,null=True,default=' ')
     # social links
     facebook = models.CharField(max_length=100,default = ' ',blank=True)
     x = models.CharField(max_length=50,default = ' ',blank=True)
@@ -50,7 +50,7 @@ class UserProfile(models.Model):
     behance = models.CharField(max_length=100,default = ' ',blank=True)
     codepen = models.CharField(max_length=100,default = ' ',blank=True)
     figma = models.CharField(max_length=100,default = ' ',blank=True)
-    phone = models.CharField(max_length=10,null=True)
+    phone = models.CharField(max_length=10,null=True,default=' ')
     
     def __str__(self) -> str:
         return f'{self.first_name} {self.last_name} profile'

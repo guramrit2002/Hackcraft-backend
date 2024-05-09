@@ -112,10 +112,17 @@ def userprofileput(request, uid):
     else:
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-def userhackathonsfilter(request,filter):
-    open = request.query_param.get('open')
+# def userhackathonsfilter(request,filter):
+#     open = request.query_param.get('open') or None
+#     close = request.query_param.get('close') or None
+#     live = request.query_param.get('live') or None
+#     oldest = request.query_param.get('oldest') or None
+#     latest = request.query_param.get('latest') or None
     
-    return Response()
+#     if oldest :
+#         if live :
+            
+#     return Response()
 
 @api_view(['GET'])
 def profilecompletepercentage(request,email):
