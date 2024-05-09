@@ -51,10 +51,22 @@ class ShortSerializer(ModelSerializer):
 
 class DropdownfieldSerializer(ModelSerializer):
     
+    field = SerializerMethodField()
+    serial_number = SerializerMethodField()
     
     class Meta:
         model = Dropdownfieldinput
         fields = '__all__'
+    
+    def get_field(self, obj):
+        if obj.dropdown_field:
+            return obj.dropdown_field.label  # Assuming long_field is related to FieldModel
+        return None
+    
+    def get_serial_number(self, obj):
+        if obj.dropdown_field:
+            return obj.dropdown_field.serial_number  # Assuming long_field is related to FieldModel
+        return None
 
 class MultiplefieldSerializer(ModelSerializer):
     

@@ -30,6 +30,7 @@ def post_participation(request,member_id):
             participation_serializer.save()
             id = participation_serializer.data.get('_id')
             for field in additional:
+                
                 if field['type'] == 'longAnswer':
                     del field['type']
                     field['registeration'] = id
@@ -43,6 +44,7 @@ def post_participation(request,member_id):
                         longserializer.save()
                     else:
                         return Response(longserializer.errors)
+                
                 elif field['type'] == 'shortAnswer':
                     del field['type']
                     field['registeration'] = id
@@ -56,6 +58,19 @@ def post_participation(request,member_id):
                         short_serializer.save()
                     else:
                         return Response(short_serializer.errors)
+                
+                elif field['type'] == 'dropdown':
+                    del field['type']
+                    field['registeration'] = id
+                    field_id = field['dropdown_field'] 
+                    dropdown = Dropdownfieldinput.objects.get(_id = field_id)
+                    if dropdown.required:
+                        if not field['input']:
+                            return Response(f'{dropdown.label} is required')
+                    multiple_serializer = DropdownfieldSerializer(data = field,many = False)
+                    if multiple_serializer.is_valid():
+                        multiple_serializer.save()
+                
                 elif field['type'] == 'multiple':
                     del field['type']
                     field['registeration'] = id
@@ -67,6 +82,7 @@ def post_participation(request,member_id):
                     multiple_serializer = MultiplefieldSerializer(data = field,many = False)
                     if multiple_serializer.is_valid():
                         multiple_serializer.save()
+                
                 elif field['type'] == 'toggle':
                     del field['type']
                     field['registeration'] = id 
@@ -78,6 +94,7 @@ def post_participation(request,member_id):
                     togglefieldSerializer = TogglefieldSerializer(data = field, many = False)
                     if togglefieldSerializer.is_valid():
                         togglefieldSerializer.save()
+                
                 elif field['type'] == 'stepper':
                     del field['type']
                     field['registeration'] = id
@@ -89,6 +106,7 @@ def post_participation(request,member_id):
                     stepperSerializer = StepperSerializer(data=field,many = False)
                     if stepperSerializer.is_valid():
                         stepperSerializer.save()
+                
                 elif field['type'] == 'date':
                     del field['type']
                     field['registeration'] = id
@@ -100,6 +118,7 @@ def post_participation(request,member_id):
                     datefieldSeriallizer = DatefieldSeriallizer(data=field,many = False)
                     if datefieldSeriallizer.is_valid():
                         datefieldSeriallizer.save()
+                
                 elif field['type'] == 'slider':
                     del field['type']
                     field['registeration'] = id
@@ -111,6 +130,7 @@ def post_participation(request,member_id):
                     sliderSerializer = SliderSerializer(data=field,many = False)
                     if sliderSerializer.is_valid():
                         sliderSerializer.save()
+                
                 elif field['type'] == 'range':
                     del field['type']
                     field['registeration'] = id
@@ -122,6 +142,7 @@ def post_participation(request,member_id):
                     rangeSerializer = RangeSerializer(data=field,many = False)
                     if rangeSerializer.is_valid():
                         rangeSerializer.save()
+                
                 elif field['type'] == 'linear':
                     del field['type']
                     field['registeration'] = id
@@ -133,6 +154,7 @@ def post_participation(request,member_id):
                     linearSerializer = LinearSerializer(data=field,many = False)
                     if linearSerializer.is_valid():
                         linearSerializer.save()
+                
                 elif field['type'] == 'file':
                     del field['type']
                     field['registeration'] = id
@@ -144,6 +166,7 @@ def post_participation(request,member_id):
                     fileuploadSerializer = FileuploadSerializer(data = field,many = False)
                     if fileuploadSerializer.is_valid():
                         fileuploadSerializer.save()
+                
                 elif field['type'] == 'tag':
                     del field['type']
                     field['registeration'] = id

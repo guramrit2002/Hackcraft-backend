@@ -69,7 +69,19 @@ def hackathon_registration_form_get_specific(request, id):
         #         i['type'] = 'phoneNumber'
         #     for i in data:
         #         serialized_data.append(i)
-                
+        
+        # Serializer Dropdown 
+        dropdown_fields = DropdownField.objects.filter(form = form)
+        if dropdown_fields:
+            data = DropdownFieldSerializer(dropdown_fields,many = True).data
+            
+            for i in data:
+                i['type'] = 'dropdown'
+                i['options'] = DropdownOptionsSerializer(DropdownOptions.objects.filter(field = i['_id']),many = True).data
+            for i in data:
+                print(i)
+                serialized_data.append(i)
+        
         # Serialize Radio Field
         radiofields = MultipleChoiceField.objects.filter(form=form, type='radio')
         if serialized_data:
@@ -221,20 +233,24 @@ def hackathon_registeration_form_post(request,id):
                 # print('valid')
                 form = form_serializer.save()
                 print(form)
+                
                 # using type in fields for detecting type of field and serializing different fields
                 for i in fields__input:
+                    
                     print(i['type'])
                     if i['type'] == 'longAnswer':
                         i['form'] = form._id
                         longserializer = LongAnswerFieldSerializer(data=i)
                         if longserializer.is_valid():
                             longserializer.save()
+                    
                     elif i['type'] == 'shortAnswer':
                         print('short ', i['label'])
                         i['form'] = form._id
                         shortserializer = ShortAnswerFieldSerializer(data=i)
                         if shortserializer.is_valid():
                             shortserializer.save()
+                    
                     elif i['type'] == 'radio':
                         print('radio')
                         i['form'] = form._id
@@ -247,6 +263,7 @@ def hackathon_registeration_form_post(request,id):
                                 if optionserializer.is_valid():
                                     optionserializer.save()
                                     print(optionserializer.data.get('text'))
+                    
                     elif i['type'] == 'checkbox':
                         print('check')
                         i['form'] = form._id
@@ -259,42 +276,62 @@ def hackathon_registeration_form_post(request,id):
                                 if optionserializer.is_valid():
                                     optionserializer.save()
                                     print(optionserializer.data.get('text'))
+                    elif i['type'] == 'dropdown':
+                        print('dropdown : ',i)
+                        i['form'] = form._id
+                        dropdown_serializer = DropdownFieldSerializer(data=i)
+                        if dropdown_serializer.is_valid():
+                            field = dropdown_serializer.save()
+                            for option in i['options']:
+                                option['field'] = field._id
+                                optionserializer = DropdownOptionsSerializer(data = option)
+                                if optionserializer.is_valid():
+                                    optionserializer.save()
+                                    print(optionserializer.data)
+                        else:
+                            print(dropdown_serializer.errors)
                     elif i['type'] == 'toggle':
                         print('toggle')
                         i['form'] = form._id
                         toggleserializer = ToggleSerializer(data=i)
                         if toggleserializer.is_valid():
                             toggleserializer.save()
+                    
                     elif i['type'] == 'stepper':
                         print('stepper')
                         i['form'] = form._id
                         stepperserializer = StepperSerializer(data=i)
                         if stepperserializer.is_valid():
                             stepperserializer.save()
+                    
                     elif i['type'] == 'slider':
                         print('slider')
                         i['form'] = form._id
                         sliderserializer = SliderSerializer(data=i)
                         if sliderserializer.is_valid():
                             sliderserializer.save()
+                    
                     elif i['type'] == 'range':
                         print('range')
                         i['form'] = form._id
                         sliderserializer = SliderSerializer(data=i)
                         if sliderserializer.is_valid():
                             sliderserializer.save()
+                    
                     elif i['type'] == 'linear':
                         print('linear')
                         sliderserializer = SliderSerializer(data=i)
                         if sliderserializer.is_valid():
                             sliderserializer.save()
                         i['form'] = form._id
+                    
                     elif i['type'] == 'file':
                         print('file')
                         i['form'] = form._id
                         sliderserializer = SliderSerializer(data=i)
                         if sliderserializer.is_valid():
                             sliderserializer.save()
+                    
                     elif i['type'] == 'tag':
                         i['form'] = form._id
                         
@@ -322,7 +359,7 @@ def hackathon_registeration_form_post(request,id):
                     "form_id":form_serializer.data['_id']
                     })
             else:
-                return Response('something is not working in validation',status=status.HTTP_400_BAD_REQUEST)
+                return Response(form_serializer.errors,status=status.HTTP_400_BAD_REQUEST)
             
         except Exception as e:
             print(e)

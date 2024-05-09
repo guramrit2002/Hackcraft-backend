@@ -58,13 +58,21 @@ class DropdownField(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     form = models.OneToOneField(HackathonRegisterationForm, on_delete=models.CASCADE )
     serial_number = models.IntegerField(null = True)
-    choices = models.CharField(max_length=20)
-    
-    def getchoices(self):
-        return[choice.strip() for choice in self.choices.split(',')]
+    error_text = models.CharField(max_length = 500,null = True)
+    label = models.CharField(max_length=200,null=True)
+    required = models.BooleanField(default=False)
     def __str__(self) -> str:
         return str(self._id)
 
+class OptionDropdown(models.Model):
+    _id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
+    created = models.DateTimeField(auto_now_add=True)
+    text = models.CharField(max_length = 500)
+    serial_number = models.IntegerField()
+    field = models.ForeignKey(DropdownField,on_delete = models.CASCADE)
+    
+    def __str__(self):
+        return str(self._id)
 
 class MultipleChoiceField(models.Model):
     
@@ -89,7 +97,9 @@ class Options(models.Model):
     field = models.ForeignKey(MultipleChoiceField,on_delete = models.CASCADE)
     def __str__(self) -> str:
         return str(self._id)
-    
+
+
+
 class Toggle(models.Model):
     
     _id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
