@@ -36,6 +36,7 @@ class UserProfile(models.Model):
     specialization = models.CharField(max_length=200,default = ' ',blank=True)
     percentage = models.IntegerField(default = -1,blank=True)
     skill = models.ManyToManyField(Skill,default = None,blank=True)
+    degree = models.CharField(max_length=200,null=True)
     # social links
     facebook = models.CharField(max_length=100,default = ' ',blank=True)
     x = models.CharField(max_length=50,default = ' ',blank=True)

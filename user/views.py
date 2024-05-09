@@ -112,9 +112,10 @@ def userprofileput(request, uid):
     else:
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-# def userhackathonsfilter(request,filter):
-#     if 
-#     return Response()
+def userhackathonsfilter(request,filter):
+    open = request.query_param.get('open')
+    
+    return Response()
 
 @api_view(['GET'])
 def profilecompletepercentage(request,email):
