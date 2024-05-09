@@ -48,7 +48,7 @@ class LongAnswerField(models.Model):
     label = models.CharField(max_length=1000)
     error_text = models.CharField(max_length = 500)
     required = models.BooleanField()
-    
+    hint = models.CharField(max_length = 1000,null=True)
     
     def __str__(self) -> str:
         return str(self.label)

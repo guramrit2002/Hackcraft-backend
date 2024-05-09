@@ -37,7 +37,8 @@ INSTALLED_APPS = [
     'user',
     'team',
     'user_participation',
-    'anonymous'
+    'anonymous',
+    'dashboard'
 ]
 
 MIDDLEWARE = [

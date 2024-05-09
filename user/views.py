@@ -113,10 +113,8 @@ def userprofileput(request, uid):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # def userhackathonsfilter(request,filter):
-#     = request.query_params.get('')
-#     latitude= request.query_params.get('')
-#     radius = request.query_params.get('')
-#     return Response(hackathon_serializer.data,status=status.HTTP_200_OK)
+#     if 
+#     return Response()
 
 @api_view(['GET'])
 def profilecompletepercentage(request,email):
