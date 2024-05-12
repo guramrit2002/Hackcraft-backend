@@ -9,7 +9,8 @@ urlpatterns = [
     path('',include('user.urls')),
     path('team/',include('team.urls')),
     path('participation/',include('user_participation.urls')),
-    path('anonymous/',include('anonymous.urls'))
+    path('anonymous/',include('anonymous.urls')),
+    path('dashboard/',include('dashboard.urls'))    
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

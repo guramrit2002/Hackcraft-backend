@@ -13,7 +13,7 @@ class Skill(models.Model):
     skill_name = models.CharField(max_length=200,unique=True)
     
     def __str__(self) -> str:
-        return self.skill_name
+        return str(self._id)
     
 
 class UserProfile(models.Model):

@@ -9,6 +9,9 @@ from django.core.mail import send_mail
 from hackathon_template.models import Hackathon
 from hackathon_template.serializers import HackathonSerializer
 from user_participation.models import Participation
+from team.models import Team,Members
+from hackathon_template.models import Round
+from datetime import datetime
 
 @api_view(['GET'])
 def userProfile(request,uid):
@@ -16,8 +19,7 @@ def userProfile(request,uid):
     try:
         # Fetch the Firebase user by UID
         firebase_user = auth.get_user(uid)
-        print(firebase_user)
-        print(uid)
+        
         # Use the email to get the corresponding UserProfile
         profile_object = UserProfile.objects.get(email=firebase_user.email)
         
@@ -44,6 +46,7 @@ def userProfile(request,uid):
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @api_view(['POST'])
+
 def userprofilepost(request):
     try:
         # Fetching email from request body
@@ -112,17 +115,7 @@ def userprofileput(request, uid):
     else:
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-# def userhackathonsfilter(request,filter):
-#     open = request.query_param.get('open') or None
-#     close = request.query_param.get('close') or None
-#     live = request.query_param.get('live') or None
-#     oldest = request.query_param.get('oldest') or None
-#     latest = request.query_param.get('latest') or None
-    
-#     if oldest :
-#         if live :
-            
-#     return Response()
+
 
 @api_view(['GET'])
 def profilecompletepercentage(request,email):
@@ -225,3 +218,64 @@ def otpreset(request,email):
             return Response(str(e),status=status.HTTP_400_BAD_REQUEST)
     except Exception as e:
         return Response(str(e),status=status.HTTP_400_BAD_REQUEST)
+    
+@api_view(['GET'])
+def dashboard_registered_hackathon(request, user_email):
+    print(user_email)
+    open = request.query_params.get('open') or None
+    close = request.query_params.get('close') or None
+    live = request.query_params.get('live') or None
+    oldest = request.query_params.get('oldest') or None
+    latest = request.query_params.get('latest') or None
+    members = Members.objects.filter(user=UserProfile.objects.get(email=user_email))
+    
+    
+            
+    hackathons = []
+    try:
+        for member in members:
+            filter_hackathons = Participation.objects.filter(member=member)
+            
+            for filter_hackathon in filter_hackathons:
+                rounds = Round.objects.filter(hackathon = filter_hackathon.form.hackathon).order_by('serial_number')
+                print(rounds)
+                hackathon_object = {
+                    'hackathon_name': filter_hackathon.form.hackathon.name,
+                    'hackathon_host_date': filter_hackathon.form.hackathon.created_at,
+                    'registered_on': filter_hackathon.created,
+                    'organisation': filter_hackathon.form.hackathon.organisation_name,
+                    'team': member.team.team_name,
+                    'hackathon_deadline': filter_hackathon.form.hackathon.deadline
+                }
+                hackathons.append(hackathon_object)
+        
+        def filterutility(hackathons,live,close,open):
+            if live:
+                pass
+            elif close:
+                close_hackathon = []
+                for hackathon in hackathons:
+                    if hackathon['hackathon_deadline'] < datetime.now().date():
+                        close_hackathon.append(hackathon)
+                hackathons = close_hackathon
+            elif open:
+                open_hackathon = []
+                for hackathon in hackathons:
+                    if hackathon['hackathon_deadline'] >= datetime.now().date():
+                        open_hackathon.append(hackathon)
+                hackathons = open_hackathon
+            return hackathons
+        
+        if oldest:
+            hackathons.sort(key=lambda x: x['hackathon_host_date'], reverse=True)
+            hackathons = filterutility(hackathons,live,close,open)
+        elif latest:
+            hackathons.sort(key=lambda x: x['hackathon_host_date'])
+            hackathons = filterutility(hackathons,live,close,open)
+        elif not oldest and not latest:
+            hackathons = filterutility(hackathons,live,close,open)
+            
+        return Response(hackathons,status=status.HTTP_200_OK)
+    except Exception as e:
+        print(e)
+        return Response(str(e),status= status.HTTP_400_BAD_REQUEST)
