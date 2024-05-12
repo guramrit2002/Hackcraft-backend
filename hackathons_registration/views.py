@@ -60,16 +60,6 @@ def hackathon_registration_form_get_specific(request, id):
                 i['type'] = 'shortAnswer'
             for i in data:
                 serialized_data.append(i)
-                
-        # Serialize PhoneNumberField
-        # shortfields = ShortAnswerField.objects.filter(form=form)
-        # if shortfields:
-        #     data= ShortAnswerFieldSerializer(shortfields, many=True).data
-        #     for i in data:
-        #         i['type'] = 'phoneNumber'
-        #     for i in data:
-        #         serialized_data.append(i)
-        
         # Serializer Dropdown 
         dropdown_fields = DropdownField.objects.filter(form = form)
         if dropdown_fields:
