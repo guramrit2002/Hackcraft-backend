@@ -227,10 +227,10 @@ def dashboard_registered_hackathon(request, user_email):
     live = request.query_params.get('live') or None
     oldest = request.query_params.get('oldest') or None
     latest = request.query_params.get('latest') or None
+    all = request.query_params.get('all') or None
     members = Members.objects.filter(user=UserProfile.objects.get(email=user_email))
     
     
-            
     hackathons = []
     try:
         for member in members:

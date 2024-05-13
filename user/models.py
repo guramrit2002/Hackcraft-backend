@@ -18,47 +18,50 @@ class Skill(models.Model):
 
 class UserProfile(models.Model):
     
-    _id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
-    user_type = models.CharField(max_length=500,choices=USER_TYPE,null=True)
-    first_name = models.CharField(max_length=200, null=False)
-    last_name  = models.CharField(max_length=200, null=False)
-    email = models.EmailField(max_length=254,unique = True, null=False)
-    username  = models.CharField(max_length=250, default = ' ',blank=True)
-    gender = models.CharField(max_length=250,default = ' ',blank=True)
-    city = models.CharField(max_length=250,default = ' ',blank=True)
-    organisation = models.CharField(max_length=250,default = ' ',blank=True)
-    cousrse_name = models.CharField(max_length=250,default = ' ',blank=True)
-    course_end_year = models.IntegerField(default = -1,blank=True)
-    date_of_birth = models.DateField(blank=True, null=True,auto_now_add=False)
-    interest = models.JSONField(default={},blank=True)
-    about  = models.CharField(max_length=3000,default = ' ',blank=True)
-    education_qualification = models.CharField(max_length=100,default = ' ',blank=True)
-    specialization = models.CharField(max_length=200,default = ' ',blank=True)
-    percentage = models.IntegerField(default = -1,blank=True)
-    skill = models.ManyToManyField(Skill,default = None,blank=True)
-    degree = models.CharField(max_length=200,null=True,default=' ',blank = True)
+
+    _id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user_type = models.CharField(max_length=500, choices=USER_TYPE,default=' ', null=True,blank=True)
+    first_name = models.CharField(max_length=200)
+    last_name = models.CharField(max_length=200)
+    email = models.EmailField(max_length=254, unique=True)
+    username = models.CharField(max_length=250, default=' ' )
+    gender = models.CharField(max_length=250, default=' ' )
+    city = models.CharField(max_length=250, default=' ' )
+    organisation = models.CharField(max_length=250, default=' ' )
+    cousrse_name = models.CharField(max_length=250, default=' ' )
+    course_end_year = models.IntegerField(default=-1 )
+    date_of_birth = models.DateField(null=True)
+    interest = models.JSONField(default={} )
+    about = models.CharField(max_length=3000, default=' ' )
+    education_qualification = models.CharField(max_length=100, default=' ' )
+    specialization = models.CharField(max_length=200, default=' ' )
+    percentage = models.IntegerField(default=-1 )
+    skill = models.ManyToManyField(Skill, default=None,blank=True)
+    degree = models.CharField(max_length=200, default=' ' )
     # social links
-    facebook = models.CharField(max_length=100,default = ' ',blank=True)
-    x = models.CharField(max_length=50,default = ' ',blank=True)
-    instagram = models.CharField(max_length=100,default = ' ',blank=True)
-    linkedin = models.CharField(max_length=100,default = ' ',blank=True)
-    github = models.CharField(max_length=100,default = ' ',blank=True)
-    medium = models.CharField(max_length=100,default = ' ',blank=True)
-    reddit = models.CharField(max_length=100,default = ' ',blank=True)
-    slack = models.CharField(max_length=100,default = ' ',blank=True)
-    dribble = models.CharField(max_length=100,default = ' ',blank=True)
-    behance = models.CharField(max_length=100,default = ' ',blank=True)
-    codepen = models.CharField(max_length=100,default = ' ',blank=True)
-    figma = models.CharField(max_length=100,default = ' ',blank=True)
-    phone = models.CharField(max_length=10,null=True,default=' ',blank=True)
-    
+    facebook = models.CharField(max_length=100, default=' ' )
+    x = models.CharField(max_length=50, default=' ' )
+    instagram = models.CharField(max_length=100, default=' ')
+    linkedin = models.CharField(max_length=100, default=' ' )
+    github = models.CharField(max_length=100, default=' ' )
+    medium = models.CharField(max_length=100, default=' ' )
+    reddit = models.CharField(max_length=100, default=' ' )
+    slack = models.CharField(max_length=100, default=' ' )
+    dribble = models.CharField(max_length=100, default=' ' )
+    behance = models.CharField(max_length=100, default=' ' )
+    codepen = models.CharField(max_length=100, default=' ' )
+    figma = models.CharField(max_length=100, default=' ' )
+    phone = models.CharField(max_length=10, null=True, default=' ' )
+
     def __str__(self) -> str:
         return f'{self.first_name} {self.last_name} profile'
+
+        super().save(*args, **kwargs)
     
     def print_model_fields(self):
         res_dict = {}
         for field in self._meta.get_fields():
-            
+
             try:
                 field_name = field.name
                 if field.many_to_many or field.one_to_many:
@@ -66,11 +69,10 @@ class UserProfile(models.Model):
                 else:
                     field_value = getattr(self, field_name)
                 res_dict[field_name] = field_value
-                
+
             except Exception as e:
                 print(f"Error printing field {field_name}: {e}")
         return res_dict
-    
 
 
 
