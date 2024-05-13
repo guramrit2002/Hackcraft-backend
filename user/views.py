@@ -234,11 +234,14 @@ def dashboard_registered_hackathon(request, user_email):
     hackathons = []
     try:
         for member in members:
+            print(member)
             filter_hackathons = Participation.objects.filter(member=member)
             
             for filter_hackathon in filter_hackathons:
                 rounds = Round.objects.filter(hackathon = filter_hackathon.form.hackathon).values('start_timeline','end_timeline').order_by('serial_number')
+                print('rounds : ',rounds)
                 if len(rounds):
+                    print(len(rounds))
                     start,end = rounds[0].get('start_timeline'),rounds[len(rounds)-1].get('end_timeline')
                     print('start : ',start)
                     print('end : ', end)
@@ -253,44 +256,48 @@ def dashboard_registered_hackathon(request, user_email):
                     'start' : start,
                     'end' : end
                     }
-                hackathons.append(hackathon_object)
+                    hackathons.append(hackathon_object)
         
-                def filterutility(hackathons,live,close,open,start,end):
-                    if live:
-                        live_hackathons = []
-                        for hackathon in hackathons:
-                            if hackathon['start'].date() < datetime.now().date() and hackathon['end'].date()>datetime.now().date():
-                                hackathon['tag'] = 'live'
-                                live_hackathons.append(hackathon)
-                        hackathons = live_hackathons
-                    elif close:
-                        close_hackathon = []
-                        for hackathon in hackathons:
-                            if hackathon['hackathon_deadline'] < datetime.now().date():
-                                hackathon['tag'] = 'close'
-                                close_hackathon.append(hackathon)
-                        hackathons = close_hackathon
-                    elif open:
-                        open_hackathon = []
-                        for hackathon in hackathons:
-                            if hackathon['hackathon_deadline'] >= datetime.now().date():
-                                hackathon['tag'] = 'open'
-                                open_hackathon.append(hackathon)
-                        hackathons = open_hackathon
-                    elif all:
-                        for hackathon in hackathons:
-                            hackathon['tag'] = 'all_hackathons'
-                    return hackathons
-                
-                
-                if oldest:
-                    hackathons.sort(key=lambda x: x['hackathon_host_date'], reverse=True)
-                    hackathons = filterutility(hackathons,live,close,open,start,end)
-                elif latest:
-                    hackathons.sort(key=lambda x: x['hackathon_host_date'])
-                    hackathons = filterutility(hackathons,live,close,open)
-                elif not oldest and not latest:
-                    hackathons = filterutility(hackathons,live,close,open)
+                    def filterutility(hackathons,live,close,open,start,end):
+                        if live:
+                            
+                            live_hackathons = []
+                            print(live_hackathons)
+                            for hackathon in hackathons:
+                                if hackathon['start'].date() <= datetime.now().date() and hackathon['end'].date() >= datetime.now().date():
+                                    print('live')
+                                    hackathon['tag'] = 'live'
+                                    live_hackathons.append(hackathon)
+                                    print('live hackathon : ',live_hackathons)
+                            hackathons = live_hackathons
+                        elif close:
+                            close_hackathon = []
+                            for hackathon in hackathons:
+                                if hackathon['hackathon_deadline'] < datetime.now().date():
+                                    hackathon['tag'] = 'close'
+                                    close_hackathon.append(hackathon)
+                            hackathons = close_hackathon
+                        elif open:
+                            open_hackathon = []
+                            for hackathon in hackathons:
+                                if hackathon['hackathon_deadline'] >= datetime.now().date():
+                                    hackathon['tag'] = 'open'
+                                    open_hackathon.append(hackathon)
+                            hackathons = open_hackathon
+                        elif all:
+                            for hackathon in hackathons:
+                                hackathon['tag'] = 'all_hackathons'
+                        return hackathons
+                    
+                    
+                    if oldest:
+                        hackathons.sort(key=lambda x: x['hackathon_host_date'], reverse=True)
+                        hackathons = filterutility(hackathons,live,close,open,start,end)
+                    elif latest:
+                        hackathons.sort(key=lambda x: x['hackathon_host_date'])
+                        hackathons = filterutility(hackathons,live,close,open,start,end)
+                    elif not oldest and not latest:
+                        hackathons = filterutility(hackathons,live,close,open,start,end)
             
         return Response(hackathons,status=status.HTTP_200_OK)
     except Exception as e:

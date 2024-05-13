@@ -18,7 +18,6 @@ class Skill(models.Model):
 
 class UserProfile(models.Model):
     
-
     _id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user_type = models.CharField(max_length=500, choices=USER_TYPE,default=' ', null=True,blank=True)
     first_name = models.CharField(max_length=200)
@@ -55,8 +54,6 @@ class UserProfile(models.Model):
 
     def __str__(self) -> str:
         return f'{self.first_name} {self.last_name} profile'
-
-        super().save(*args, **kwargs)
     
     def print_model_fields(self):
         res_dict = {}
