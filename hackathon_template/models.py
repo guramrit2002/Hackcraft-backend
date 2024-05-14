@@ -25,6 +25,7 @@ FIELD_CHOICE = (
 class Hackathon(models.Model):
     _id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    # created_by = models.ForeignKey(UserProfile,on_delete=models.CASCADE,null = True)
     logo = models.CharField(max_length=2000,default="",blank =True)
     name = models.CharField(max_length=250)
     organisation_name = models.CharField(max_length=250,default = None)
@@ -45,7 +46,7 @@ class Hackathon(models.Model):
     contact1_name = models.CharField(max_length=250, default=None,blank = True)
     contact2_number = models.IntegerField(default=None)
     form_exist  = models.BooleanField(default = False)
-    number_of_registeration = models.IntegerField(blank=True,default= None)
+    number_of_registeration = models.IntegerField(blank=True,default= None,null=True)
     contact1_number = models.IntegerField(default=None)
     contact2_name = models.CharField(max_length=250, default=None,blank = True)
     discord = models.CharField(max_length = 200,blank=True,default= None)
@@ -56,7 +57,7 @@ class Hackathon(models.Model):
     twitter = models.CharField(max_length = 200,blank = True,default= '')
     linkedin = models.CharField(max_length = 200,blank = True,default= '')
     # added now 
-    total_number_rounds = models.IntegerField(blank=True)
+    total_number_rounds = models.IntegerField(blank=True,null=True)
     def __str__(self) -> str:
         return str(self.name)
 
