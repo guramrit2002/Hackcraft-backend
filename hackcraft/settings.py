@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'team',
     'user_participation',
     'anonymous',
-    'dashboard'
+    'dashboard',
+    'hackathon'
 ]
 
 MIDDLEWARE = [

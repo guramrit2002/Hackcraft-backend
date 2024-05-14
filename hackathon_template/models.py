@@ -25,7 +25,7 @@ FIELD_CHOICE = (
 class Hackathon(models.Model):
     _id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    logo = models.ImageField(upload_to='logo', max_length=250,null=True,blank=True)
+    logo = models.CharField(max_length=2000,default="",blank =True)
     name = models.CharField(max_length=250)
     organisation_name = models.CharField(max_length=250,default = None)
     mode_of_conduct = models.CharField(max_length=250)
@@ -35,28 +35,28 @@ class Hackathon(models.Model):
     start_date_time = models.DateTimeField(auto_now=False, auto_now_add=False)
     about = models.TextField()
     brief = models.TextField(default=None)
-    image1 = models.CharField(max_length=250,null=True,blank=True)
-    image2 = models.CharField(max_length=250,null=True,blank=True)
-    image3 = models.CharField(max_length=250,null=True,blank=True)
-    image4 = models.CharField(max_length=250,null=True,blank=True)
-    image5 = models.CharField(max_length=250,null=True,blank=True)
-    fee = models.CharField(max_length = 100 ,default=None,null = True,blank = True)
+    image1 = models.CharField(max_length=250,blank=True)
+    image2 = models.CharField(max_length=250,blank=True)
+    image3 = models.CharField(max_length=250,blank=True)
+    image4 = models.CharField(max_length=250,blank=True)
+    image5 = models.CharField(max_length=250,blank=True)
+    fee = models.CharField(max_length = 100 ,default=None,blank = True)
     venue = models.CharField(max_length=500, default=None,)
-    contact1_name = models.CharField(max_length=250, default=None,null = True,blank = True)
-    contact1_number = models.IntegerField(default=None)
-    contact2_name = models.CharField(max_length=250, default=None,null = True,blank = True)
+    contact1_name = models.CharField(max_length=250, default=None,blank = True)
     contact2_number = models.IntegerField(default=None)
     form_exist  = models.BooleanField(default = False)
-    number_of_registeration = models.IntegerField(null = True,blank=True,default= None)
-    discord = models.CharField(max_length = 200,null = True,blank=True,default= None)
-    email = models.EmailField(null = True,blank=True,default= None)
-    website = models.CharField(max_length=100,null = True,blank = True,default= None)
-    github = models.CharField(max_length = 200,null = True,blank = True,default= '')
-    facebook = models.CharField(max_length = 200,null = True,blank = True,default= '')
-    twitter = models.CharField(max_length = 200,null = True,blank = True,default= '')
-    linkedin = models.CharField(max_length = 200,null = True,blank = True,default= '')
+    number_of_registeration = models.IntegerField(blank=True,default= None)
+    contact1_number = models.IntegerField(default=None)
+    contact2_name = models.CharField(max_length=250, default=None,blank = True)
+    discord = models.CharField(max_length = 200,blank=True,default= None)
+    email = models.EmailField(blank=True,default= None)
+    website = models.CharField(max_length=100,blank = True,default= None)
+    github = models.CharField(max_length = 200,blank = True,default= '')
+    facebook = models.CharField(max_length = 200,blank = True,default= '')
+    twitter = models.CharField(max_length = 200,blank = True,default= '')
+    linkedin = models.CharField(max_length = 200,blank = True,default= '')
     # added now 
-    total_number_rounds = models.IntegerField(null=True)
+    total_number_rounds = models.IntegerField(blank=True)
     def __str__(self) -> str:
         return str(self.name)
 
@@ -71,17 +71,18 @@ class ThemeHackathon(models.Model):
     
     def __str__(self) -> str:
         return self.theme
-    
+
 class HackathonViews(models.Model):
     _id = models.UUIDField(
         primary_key=True, default=uuid.uuid4, editable=False, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(UserProfile,on_delete=models.CASCADE)
+    hackathon = models.ForeignKey(Hackathon,on_delete=models.CASCADE,null=True)
     view = models.PositiveIntegerField()
     
     def __str__(self):
         return self.user.email
-    
+
 class Round(models.Model):
     _id = models.UUIDField(
         primary_key=True, default=uuid.uuid4, editable=False, unique=True)
@@ -96,7 +97,6 @@ class Round(models.Model):
     def __str__(self) -> str:
         return str(self._id)
 
-    
 class Field(models.Model):
     _id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
     hackathon = models.ForeignKey(Hackathon,on_delete = models.CASCADE,null = True,blank = True)
@@ -129,7 +129,6 @@ class Textproperties(models.Model):
     
     def __str__(self) -> str:
         return str(self._id)
-    
 
 class Container(models.Model):
     _id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)

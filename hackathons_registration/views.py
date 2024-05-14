@@ -38,9 +38,9 @@ def hackathon_registration_form_get_specific(request, id):
         # hakathon registerations form fetching using hackathon id
         form = get_object_or_404(HackathonRegisterationForm, hackathon___id=id)
         formserializer = HackathonRegistrationFormSerializer(form)
+        
         # Initialize a array to collect all serialized data
         serialized_data = []
-
         # from here fields start fetching and serializing
         
         # Serialize LongAnswerField
@@ -67,7 +67,7 @@ def hackathon_registration_form_get_specific(request, id):
             
             for i in data:
                 i['type'] = 'dropdown'
-                i['options'] = DropdownOptionsSerializer(DropdownOptions.objects.filter(field = i['_id']),many = True).data
+                i['options'] = DropdownOptionsSerializer(OptionDropdown.objects.filter(field = i['_id']),many = True).data
             for i in data:
                 print(i)
                 serialized_data.append(i)
@@ -181,8 +181,9 @@ def hackathon_registration_form_get_specific(request, id):
         sorted_fields = []
         
         data = serialized_data
-        # print(data)
+        print(data)
         for i in range(1,form.number_of_fields):
+            print(i)
             for j in data:
                 if j['serial_number'] == i :
                     sorted_fields.append(j)                    
@@ -224,7 +225,14 @@ def hackathon_registeration_form_post(request,id):
                 form = form_serializer.save()
                 print(form)
                 
+                # changin state of hackathon from form not existing to form existing
+                
+                hackathon = Hackathon.objects.get(_id = id)
+                hackathon.form_exist = True
+                hackathon.save()
+                
                 # using type in fields for detecting type of field and serializing different fields
+                
                 for i in fields__input:
                     
                     print(i['type'])

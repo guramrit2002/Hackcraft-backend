@@ -13,7 +13,7 @@ class HackathonRegisterationForm(models.Model):
     
     _id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
     created = models.DateTimeField(auto_now_add=True)
-    hackathon = models.ForeignKey(Hackathon,on_delete=models.CASCADE)
+    hackathon = models.ForeignKey(Hackathon,on_delete=models.CASCADE,null=True)
     number_of_fields = models.IntegerField(null = True)
     
     def __str__(self):

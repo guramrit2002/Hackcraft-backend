@@ -241,20 +241,18 @@ def dashboard_registered_hackathon(request, user_email):
                 rounds = Round.objects.filter(hackathon = filter_hackathon.form.hackathon).values('start_timeline','end_timeline').order_by('serial_number')
                 print('rounds : ',rounds)
                 if len(rounds):
-                    print(len(rounds))
+                    
                     start,end = rounds[0].get('start_timeline'),rounds[len(rounds)-1].get('end_timeline')
-                    print('start : ',start)
-                    print('end : ', end)
                     
                     hackathon_object = {
-                    'hackathon_name': filter_hackathon.form.hackathon.name,
-                    'hackathon_host_date': filter_hackathon.form.hackathon.created_at,
-                    'registered_on': filter_hackathon.created,
-                    'organisation': filter_hackathon.form.hackathon.organisation_name,
-                    'team': member.team.team_name,
-                    'hackathon_deadline': filter_hackathon.form.hackathon.deadline,
-                    'start' : start,
-                    'end' : end
+                        'hackathon_name': filter_hackathon.form.hackathon.name,
+                        'hackathon_host_date': filter_hackathon.form.hackathon.created_at,
+                        'registered_on': filter_hackathon.created,
+                        'organisation': filter_hackathon.form.hackathon.organisation_name,
+                        'team': member.team.team_name,
+                        'hackathon_deadline': filter_hackathon.form.hackathon.deadline,
+                        'start' : start,
+                        'end' : end
                     }
                     hackathons.append(hackathon_object)
         

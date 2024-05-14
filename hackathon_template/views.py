@@ -20,7 +20,7 @@ def gethackathon(request):
                 'team_size': hackathon.team_size,
                 'mode_of_conduct': hackathon.mode_of_conduct,
                 'venue': hackathon.venue,
-                'Logo': hackathon.logo.url if hackathon.logo else None,
+                'Logo': hackathon.logo.url if hackathon.logo else '',
                 'Image': [hackathon.image1,hackathon.image2,hackathon.image3,hackathon.image4,hackathon.image5],
                 'social':{
                     "discord":hackathon.discord,
@@ -90,6 +90,7 @@ def defaultpost(request):
             hackathon_serializer = HackathonSerializer(data= hackathon,many= False)
             if hackathon_serializer.is_valid():
                 new_hackathon = hackathon_serializer.save()
+                
                 for i in body.get('round', []):
                         
                         i['hackathon'] = str(new_hackathon._id)
