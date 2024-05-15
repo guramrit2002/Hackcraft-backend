@@ -292,7 +292,6 @@ def dashboard_registered_hackathon(request, user_email):
                             return hackathons
                     
                     if oldest:
-                        print("oldest")
                         hackathons.sort(key=lambda x: x['hackathon_host_date'],reverse=True)
                         hackathons = filterutility(hackathon_object,live,close,open,start,end)
                         print(hackathons)
