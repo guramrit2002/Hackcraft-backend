@@ -43,6 +43,14 @@ def defaultpage(request, id):
         hackathon = Hackathon.objects.get(_id=id)
         round = Round.objects.filter(hackathon = hackathon)
         hackathon_serializer = HackathonSerializer(hackathon, many=False)
+        hackathon_data = hackathon_serializer.data
+        images = [hackathon_data.get('image1'),hackathon_data.get('image2'),hackathon_data.get('image3'),hackathon_data.get('image4'),hackathon_data.get('image5')]
+        del hackathon_data['image1']
+        del hackathon_data['image2']
+        del hackathon_data['image3']
+        del hackathon_data['image4']
+        del hackathon_data['image5']
+        hackathon_data['images'] = images
         round_serializer = RoundSerializer(round,many=True)
         fields_data = []
         fields = Field.objects.filter(hackathon=hackathon)
@@ -63,7 +71,7 @@ def defaultpage(request, id):
             container_data['properties'] = property_serializer.data
             containers_data.append(container_data)
         response_data = {
-            'hackathon': hackathon_serializer.data,
+            'hackathon': hackathon_data,
             'round':round_serializer.data,
             'fields': fields_data,
             'containers': containers_data
@@ -87,6 +95,13 @@ def defaultpost(request):
         # print(body)
         if body :
             hackathon = body['hackathon']
+            images = hackathon['images']
+            del hackathon['images']
+            for i in range(len(images)):
+                print(images[i])
+                hackathon['image'+str(i+1)] = images[i] 
+            user_email = hackathon['created_by']
+            hackathon['created_by'] = UserProfile.objects.get(email = user_email)._id
             hackathon_serializer = HackathonSerializer(data= hackathon,many= False)
             if hackathon_serializer.is_valid():
                 new_hackathon = hackathon_serializer.save()
@@ -144,9 +159,4 @@ def defaultpost(request):
         else:
 
             return Response({'error':'Response is required'},status=status.HTTP_400_BAD_REQUEST)
-        
-    
-# @api_view(['POST'])
-# def postviewcount(request):
-#     try:
         

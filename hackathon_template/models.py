@@ -23,9 +23,10 @@ FIELD_CHOICE = (
 
 
 class Hackathon(models.Model):
+    
     _id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    # created_by = models.ForeignKey(UserProfile,on_delete=models.CASCADE,null = True)
+    created_by = models.ForeignKey(UserProfile,on_delete=models.CASCADE,null = True)
     logo = models.CharField(max_length=2000,default="",blank =True)
     name = models.CharField(max_length=250)
     organisation_name = models.CharField(max_length=250,default = None)
@@ -44,10 +45,10 @@ class Hackathon(models.Model):
     fee = models.CharField(max_length = 100 ,default=None,blank = True)
     venue = models.CharField(max_length=500, default=None,)
     contact1_name = models.CharField(max_length=250, default=None,blank = True)
-    contact2_number = models.IntegerField(default=None)
+    contact2_number = models.CharField(max_length=10,default=None)
     form_exist  = models.BooleanField(default = False)
     number_of_registeration = models.IntegerField(blank=True,default= None,null=True)
-    contact1_number = models.IntegerField(default=None)
+    contact1_number = models.CharField(max_length=10,default=None)
     contact2_name = models.CharField(max_length=250, default=None,blank = True)
     discord = models.CharField(max_length = 200,blank=True,default= None)
     email = models.EmailField(blank=True,default= None)
@@ -144,7 +145,7 @@ class Containerproperty(models.Model):
     _id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True, )
     container = models.OneToOneField(Container, on_delete = models.CASCADE,null=True,blank=True)
     Color = models.CharField(max_length=200,null=True,blank=True)
-    border_color = models.CharField(max_length=200,null = False,blank=False)
+    border_color = models.CharField(max_length=200,null = True,blank=True)
     border_radius= models.DecimalField(max_digits=2,decimal_places=2,null = True,blank=True)
     box_shadow_color = models.CharField(max_length=200,null=True,blank=True)
     blur_radius = models.DecimalField(max_digits = 2,decimal_places=2,null = True,blank=True)

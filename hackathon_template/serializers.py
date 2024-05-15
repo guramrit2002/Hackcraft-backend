@@ -8,25 +8,24 @@ class HackathonSerializer(serializers.ModelSerializer):
         model = Hackathon
         fields = '__all__'
     
-    # def get_hackathon(self,obj):
-    #     return {
-    #         '_id': obj._id,
-    #         'name': obj.name,
-    #         'organisation_name': obj.organisation_name,
-    #         'price': obj.fee,
-    #         'start_date_time': obj.start_date_time,
-    #         'team_size': obj.team_size,
-    #         'mode_of_conduct': obj.mode_of_conduct,
-    #         'venue': obj.venue,
-    #         'Logo': obj.logo,
-    #         'Image': obj.image1,  # You might need to adjust this based on your requirements
-    #     }
+    # def to_representation(self, data):
+    #     print('data : ',data.images)
+    #     images = data.images
+    #     response = data.copy()  
+    #     del response['images']
+    #     for i in range(len(images)):
+    #         response['images'+str(i+1)] = images[i] 
+    #     return super().to_representation(response)
+            
 
 class RoundSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Round
         fields = '__all__'
+        
+    def to_representation(self, instance):
+        return super().to_representation(instance)
 
 class FieldSerializer(serializers.ModelSerializer):
 

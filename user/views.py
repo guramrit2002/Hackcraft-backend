@@ -241,7 +241,6 @@ def dashboard_registered_hackathon(request, user_email):
                 rounds = Round.objects.filter(hackathon = filter_hackathon.form.hackathon).values('start_timeline','end_timeline').order_by('serial_number')
                 print('rounds : ',rounds)
                 if len(rounds):
-                    
                     start,end = rounds[0].get('start_timeline'),rounds[len(rounds)-1].get('end_timeline')
                     
                     hackathon_object = {

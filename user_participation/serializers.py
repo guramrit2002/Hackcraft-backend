@@ -22,12 +22,12 @@ class LongSerializer(ModelSerializer):
         
     def get_field(self, obj):
         if obj.long_field:
-            return obj.long_field.label  # Assuming long_field is related to FieldModel
+            return obj.long_field.label 
         return None
     
     def get_serial_number(self, obj):
         if obj.long_field:
-            return obj.long_field.serial_number  # Assuming long_field is related to FieldModel
+            return obj.long_field.serial_number 
         return None
 
 class ShortSerializer(ModelSerializer):
@@ -41,12 +41,12 @@ class ShortSerializer(ModelSerializer):
     
     def get_field(self, obj):
         if obj.short_field:
-            return obj.short_field.label  # Assuming long_field is related to FieldModel
+            return obj.short_field.label 
         return None
     
     def get_serial_number(self, obj):
         if obj.short_field:
-            return obj.short_field.serial_number  # Assuming long_field is related to FieldModel
+            return obj.short_field.serial_number 
         return None
 
 class DropdownfieldSerializer(ModelSerializer):
@@ -60,12 +60,12 @@ class DropdownfieldSerializer(ModelSerializer):
     
     def get_field(self, obj):
         if obj.dropdown_field:
-            return obj.dropdown_field.label  # Assuming long_field is related to FieldModel
+            return obj.dropdown_field.label  
         return None
     
     def get_serial_number(self, obj):
         if obj.dropdown_field:
-            return obj.dropdown_field.serial_number  # Assuming long_field is related to FieldModel
+            return obj.dropdown_field.serial_number 
         return None
 
 class MultiplefieldSerializer(ModelSerializer):
@@ -79,12 +79,12 @@ class MultiplefieldSerializer(ModelSerializer):
         
     def get_field(self, obj):
         if obj.multiple_field:
-            return obj.multiple_field.label  # Assuming long_field is related to FieldModel
+            return obj.multiple_field.label 
         return None
     
     def get_serial_number(self, obj):
         if obj.multiple_field:
-            return obj.multiple_field.serial_number  # Assuming long_field is related to FieldModel
+            return obj.multiple_field.serial_number 
         return None
 
 class TogglefieldSerializer(ModelSerializer):
@@ -98,12 +98,12 @@ class TogglefieldSerializer(ModelSerializer):
     
     def get_field(self, obj):
         if obj.toggle:
-            return obj.toggle.label  # Assuming long_field is related to FieldModel
+            return obj.toggle.label 
         return None
     
     def get_serial_number(self, obj):
         if obj.toggle:
-            return obj.toggle.serial_number  # Assuming long_field is related to FieldModel
+            return obj.toggle.serial_number 
         return None
     
 class StepperSerializer(ModelSerializer):
