@@ -26,7 +26,7 @@ class Hackathon(models.Model):
     
     _id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    created_by = models.ForeignKey(UserProfile,on_delete=models.CASCADE,null = True)
+    created_by = models.ForeignKey(UserProfile,on_delete=models.CASCADE)
     logo = models.CharField(max_length=2000,default="",blank =True)
     name = models.CharField(max_length=250)
     organisation_name = models.CharField(max_length=250,default = None)
@@ -101,9 +101,9 @@ class Round(models.Model):
 
 class Field(models.Model):
     _id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
-    hackathon = models.ForeignKey(Hackathon,on_delete = models.CASCADE,null = True,blank = True)
-    name = models.CharField(max_length=200,null=True,blank=True)
-    type = models.CharField(choices = FIELD_CHOICE, max_length = 200,null=True,blank=True)
+    hackathon = models.ForeignKey(Hackathon,on_delete = models.CASCADE,blank = True)
+    name = models.CharField(max_length=200,blank=True)
+    type = models.CharField(choices = FIELD_CHOICE, max_length = 200,blank=True)
     
     def __str__(self) -> str:
         return str(self.name)
@@ -111,9 +111,9 @@ class Field(models.Model):
 
 class Textproperties(models.Model):
     _id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
-    field = models.OneToOneField(Field,on_delete = models.CASCADE,null=True,blank=True)
-    font = models.CharField(max_length=200,null=True,blank=True)
-    size = models.IntegerField(null=True,blank=True)
+    field = models.OneToOneField(Field,on_delete = models.CASCADE,blank=True)
+    font = models.CharField(max_length=200,blank=True)
+    size = models.IntegerField(blank=True)
     text_color = models.CharField(max_length=200,null=True,blank=True)
     font_weight = models.IntegerField(validators=[
         MinValueValidator(
@@ -121,20 +121,20 @@ class Textproperties(models.Model):
         MaxValueValidator(
             limit_value=900, message='Value must be less than or equal to {limit_value}.')
     ],null=True,blank=True)
-    italics = models.BooleanField(null=True,blank=True)
-    underline = models.BooleanField(null=True,blank=True)
-    strikethrogh = models.BooleanField(null=True,blank=True)
-    upper_case = models.BooleanField(null=True,blank=True)
+    italics = models.BooleanField(blank=True)
+    underline = models.BooleanField(blank=True)
+    strikethrogh = models.BooleanField(blank=True)
+    upper_case = models.BooleanField(blank=True)
     align = models.CharField(choices=ALIGN_CHOICES, max_length=10)
-    letter_spacing = models.IntegerField(null=True,blank=True)
-    letter_spacing = models.IntegerField(null=True,blank=True)
+    letter_spacing = models.IntegerField(blank=True)
+    letter_spacing = models.IntegerField(blank=True)
     
     def __str__(self) -> str:
         return str(self._id)
 
 class Container(models.Model):
     _id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
-    hackathon = models.ForeignKey(Hackathon,on_delete = models.CASCADE,null = True,blank = True)
+    hackathon = models.ForeignKey(Hackathon,on_delete = models.CASCADE,blank = True)
     name = models.CharField(max_length=200)
     type = models.CharField(choices = FIELD_CHOICE, max_length = 200)
     
@@ -144,15 +144,14 @@ class Container(models.Model):
 class Containerproperty(models.Model):
     _id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True, )
     container = models.OneToOneField(Container, on_delete = models.CASCADE,null=True,blank=True)
-    Color = models.CharField(max_length=200,null=True,blank=True)
-    border_color = models.CharField(max_length=200,null = True,blank=True)
-    border_radius= models.DecimalField(max_digits=4,decimal_places=2,null = True,blank=True)
-    box_shadow_color = models.CharField(max_length=200,null=True,blank=True)
-    blur_radius = models.DecimalField(max_digits = 4,decimal_places=2,null = True,blank=True)
-    focused_border_color = models.CharField(max_length=200,null = True,blank=True)
-    border_width = models.IntegerField(null = True,blank=True)
-    height = models.IntegerField(null = True,blank=True)
-    
+    Color = models.CharField(max_length=200,blank=True)
+    border_color = models.CharField(max_length=200,blank=True)
+    border_radius= models.DecimalField(max_digits=4,decimal_places=2,blank=True)
+    box_shadow_color = models.CharField(max_length=200,blank=True)
+    blur_radius = models.DecimalField(max_digits = 4,decimal_places=2,blank=True)
+    focused_border_color = models.CharField(max_length=200,blank=True)
+    border_width = models.IntegerField(blank=True)
+    height = models.IntegerField(blank=True)
     
     def __str__(self) -> str:
         return str(self._id)
