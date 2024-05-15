@@ -1,12 +1,14 @@
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from user.models import UserProfile
+from team.models import Team
 from user_participation.models import Participation
 from hackathon_template.models import HackathonViews,Hackathon,Round
 from hackathons_registration.models import HackathonRegisterationForm
 from rest_framework import status
 from datetime import datetime
 from .serializers import HackthonDashboardSerializer
+
 
 @api_view(['GET'])
 def dashboardgetapi(request,hackathon):
@@ -112,3 +114,21 @@ def defaultgethackathons(request,email):
     except Exception as e:
         print(e)
         return Response(str(e),status=status.HTTP_400_BAD_REQUEST)
+    
+    
+# @api_view(['GET'])
+# def dashboardteamget(request,hackathon):
+#     try:
+#         teams = Team.objects.get(hackathon = hackathon)
+#         team_obj = {}
+#         for team in teams:
+#             team_obj[team] = {
+#                 "team":[
+#                     "team_name" : team.name,
+#                     "team_member_count":team.number_of_member,
+#                 ],
+#                 "members":[]
+#             }
+#     except:
+#         print('An exception occurred')
+#     return Response()

@@ -46,10 +46,10 @@ def defaultpage(request, id):
         hackathon_data = hackathon_serializer.data
         images = []
         for i in range(5):
-            if hackathon_data.get('image'+str(i) != ""):
+            if hackathon_data.get('image'+str(i+1))!="":
                 hackathon_image = hackathon_data.get(hackathon_data['image'+str(i)])
                 images.append(hackathon_image)
-        # images = [hackathon_data.get('image1'),hackathon_data.get('image2'),hackathon_data.get('image3'),hackathon_data.get('image4'),hackathon_data.get('image5')]
+        
         del hackathon_data['image1']
         del hackathon_data['image2']
         del hackathon_data['image3']

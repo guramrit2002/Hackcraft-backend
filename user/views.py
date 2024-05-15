@@ -288,7 +288,6 @@ def dashboard_registered_hackathon(request, user_email):
                             print(live_res)
                             return live_res
                         elif all:
-                            print('All list')
                             return hackathons
                     
                     if oldest:
