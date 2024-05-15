@@ -44,12 +44,19 @@ def defaultpage(request, id):
         round = Round.objects.filter(hackathon = hackathon)
         hackathon_serializer = HackathonSerializer(hackathon, many=False)
         hackathon_data = hackathon_serializer.data
+        for i in range(5):
+            if hackathon_data.get('image'+str(i) != ""):
+                hackathon_image = hackathon_data.get(hackathon_data['image'+str(i)])
+                print(hackathon_image)
         images = [hackathon_data.get('image1'),hackathon_data.get('image2'),hackathon_data.get('image3'),hackathon_data.get('image4'),hackathon_data.get('image5')]
         del hackathon_data['image1']
         del hackathon_data['image2']
         del hackathon_data['image3']
         del hackathon_data['image4']
         del hackathon_data['image5']
+        
+        
+                
         hackathon_data['images'] = images
         round_serializer = RoundSerializer(round,many=True)
         fields_data = []

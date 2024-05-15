@@ -24,7 +24,7 @@ def dashboardgetapi(request,hackathon):
     all_courses = {}
     for participation in participations:
         print('participation  :  ',participation.member.user.cousrse_name)
-        if all_courses.get(participation.member.user.cousrse_name) in all_courses.keys():
+        if all_courses.get(participation.member.user.course_name) in all_courses.keys():
             if participation.member.user.cousrse_name != ' ':
                 all_courses[participation.member.user.cousrse_name] += 1
             else :
@@ -47,7 +47,7 @@ def dashboardgetapi(request,hackathon):
 @api_view(['GET'])
 def defaultgethackathons(request,email):
     try:
-        hackathons = Hackathon.objects.filter(created_by = UserProfile.objects.get(email = email))
+        hackathons = Hackathon.objects.filter(created_by = UserProfile.objects.get(email = email)._id)
         response = {
             'live':[],
             'open':[],
@@ -55,11 +55,13 @@ def defaultgethackathons(request,email):
         }
         print(hackathons)
         for hackathon in hackathons:
+            print('hackathon id : ',hackathon._id)
             rounds = Round.objects.filter(hackathon = hackathon).values('start_timeline','end_timeline').order_by('serial_number')
             print('rounds : ',rounds)
             print(hackathon)
             if len(rounds):
                 hackathon_objects = {
+                        "_id" : hackathon._id,
                         "logo" : hackathon.logo,
                         "organisation" : hackathon.organisation_name,
                         "name":hackathon.name,
