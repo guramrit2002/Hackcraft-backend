@@ -1,14 +1,14 @@
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
+from rest_framework import status
 from user.models import UserProfile
-from team.models import Team
-from user_participation.models import Participation
+from team.models import Team, Members
+from user_participation.models import *
 from hackathon_template.models import HackathonViews,Hackathon,Round
-from hackathons_registration.models import HackathonRegisterationForm
 from rest_framework import status
 from datetime import datetime
 from .serializers import HackthonDashboardSerializer
-
+from itertools import chain
 
 @api_view(['GET'])
 def dashboardgetapi(request,hackathon):
@@ -116,19 +116,83 @@ def defaultgethackathons(request,email):
         return Response(str(e),status=status.HTTP_400_BAD_REQUEST)
     
     
-# @api_view(['GET'])
-# def dashboardteamget(request,hackathon):
-#     try:
-#         teams = Team.objects.get(hackathon = hackathon)
-#         team_obj = {}
-#         for team in teams:
-#             team_obj[team] = {
-#                 "team":[
-#                     "team_name" : team.name,
-#                     "team_member_count":team.number_of_member,
-#                 ],
-#                 "members":[]
-#             }
-#     except:
-#         print('An exception occurred')
-#     return Response()
+@api_view(['GET'])
+def dashboardteamget(request,hackathon):
+    
+    try:
+        teams = Team.objects.filter(hackathon = hackathon)
+        all_fields = []
+        for team in teams:
+            members = Members.objects.filter(team = team)
+            leader = "" 
+            reg_status = ""
+            if team.number_of_member == len(members):
+                reg_status = "Completed"
+            elif team.number_of_member < len(members):
+                reg_status = "Incompleted"
+                
+            response = {
+                    "team":{
+                            "team_name" : team.team_name,
+                            "team_member_count":team.number_of_member,
+                            "team_count":team.number_of_member,
+                            "registeration_status":reg_status,
+                            "registeration_date":"",
+                            "leader" : leader,
+                        },
+                    "members": []
+                }
+            for member in members:
+                if member.is_leader:
+                    leader = member.user.first_name + ' ' + member.user.last_name
+                participation = Participation.objects.get(member=member)
+                queries = [
+                    
+                    Longfieldinput.objects.filter(registeration=participation),
+                    Shortfieldinput.objects.filter(registeration=participation),
+                    Multiplefieldinput.objects.filter(registeration=participation),
+                    Dropdownfieldinput.objects.filter(registeration=participation),
+                    Togglefieldinput.objects.filter(registeration=participation),
+                    Stepperfieldinput.objects.filter(registeration=participation),
+                    Datefieldinput.objects.filter(registeration=participation),
+                    Sliderfieldinput.objects.filter(registeration=participation),
+                    RangefieldSlider.objects.filter(registeration=participation),
+                    LinearfieldSlider.objects.filter(registeration=participation),
+                    Fileupload.objects.filter(registeration=participation),
+                    Tagfield.objects.filter(registeration=participation)
+                ]
+                all_fields = list(chain.from_iterable(queries))
+                field_res = {}
+                for index in range(0,len(all_fields)):
+                    if hasattr(all_fields[index], 'long_field'):
+                        field_res[all_fields[index].long_field.label] = all_fields[index].input
+                    elif hasattr(all_fields[index], 'short_field'):
+                        field_res[all_fields[index].short_field.label] = all_fields[index].input
+                    elif hasattr(all_fields[index], 'multiple_field'):
+                        field_res[all_fields[index].multiple_field.label]  = all_fields[index].input.get('option')
+                    elif hasattr(all_fields[index], 'toggle') and all_fields[index].toggle:
+                        field_res[all_fields[index].toggle.label] = all_fields[index].input
+                    elif hasattr(all_fields[index], 'stepper_field') and all_fields[index].stepper_field:
+                        field_res[all_fields[index].stepper_field.label] = all_fields[index].input
+                    elif hasattr(all_fields[index], 'date_field') and all_fields[index].date_field:
+                        field_res[all_fields[index].date_field.label] =  all_fields[index].input
+                    elif hasattr(all_fields[index], 'slider') and all_fields[index].slider:
+                        field_res[all_fields[index].slider.label] =  all_fields[index].input
+                    elif hasattr(all_fields[index], 'file_field') and all_fields[index].file_field:
+                        field_res[all_fields[index].file_field.label] =  all_fields[index].input
+                    elif hasattr(all_fields[index], 'tags_field') and all_fields[index].tags_field:
+                        field_res[all_fields[index].tags_field] =  all_fields[index].input
+                member_obj = {
+                    "user_first_name":member.user.first_name,
+                    "user_last_name":member.user.last_name,
+                    "is_leader":member.is_leader,
+                    "submited_details":field_res,
+                    }
+                response['members'].append(member_obj)
+                response['team']["registeration_date"] = participation.created
+                print(response)
+                
+        return Response(response,status=status.HTTP_200_OK)
+    except Exception as e:
+        print(e)
+        return Response(str(e),status=status.HTTP_400_BAD_REQUEST)

@@ -142,7 +142,7 @@ class Container(models.Model):
         return str(self.name)
     
 class Containerproperty(models.Model):
-    _id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True, )
+    _id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
     container = models.OneToOneField(Container, on_delete = models.CASCADE,null=True,blank=True)
     Color = models.CharField(max_length=200,blank=True)
     border_color = models.CharField(max_length=200,blank=True)
