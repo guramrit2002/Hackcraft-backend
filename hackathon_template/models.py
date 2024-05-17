@@ -127,7 +127,7 @@ class Textproperties(models.Model):
     upper_case = models.BooleanField(blank=True)
     align = models.CharField(choices=ALIGN_CHOICES, max_length=10)
     letter_spacing = models.IntegerField(blank=True)
-    letter_spacing = models.IntegerField(blank=True)
+    line_height = models.IntegerField(blank=True)
     
     def __str__(self) -> str:
         return str(self._id)

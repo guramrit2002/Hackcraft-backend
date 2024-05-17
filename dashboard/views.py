@@ -12,6 +12,7 @@ from itertools import chain
 
 @api_view(['GET'])
 def dashboardgetapi(request,hackathon):
+    hackathon = Hackathon.objects.get(_id = hackathon)
     participations = Participation.objects.filter(form = HackathonRegisterationForm.objects.get(hackathon = hackathon))
     number_of_participations= participations.count()
     impressions = HackathonViews.objects.filter( hackathon = hackathon).count()
@@ -26,7 +27,7 @@ def dashboardgetapi(request,hackathon):
     all_courses = {}
     for participation in participations:
         print('participation  :  ',participation.member.user.cousrse_name)
-        if all_courses.get(participation.member.user.course_name) in all_courses.keys():
+        if all_courses.get(participation.member.user.cousrse_name) in all_courses.keys():
             if participation.member.user.cousrse_name != ' ':
                 all_courses[participation.member.user.cousrse_name] += 1
             else :
@@ -36,15 +37,25 @@ def dashboardgetapi(request,hackathon):
                 all_courses[participation.member.user.cousrse_name] = 1
             else :
                 all_courses['Other branches'] = 1
-                
+    
     response = {
         "number_of_registerations" : number_of_participations,
         "number_of_impressions" : impressions,
         "gender_counts" : all_genders,
         "hackathon_url" : hackathon_url,
-        "course_counts" : all_courses
+        "course_counts" : all_courses,
+        "social" : {"discord":hackathon.discord,"email":hackathon.email,"linkedin":hackathon.linkedin,"website":hackathon.website,"github":hackathon.github,"facebook":hackathon.facebook,"twitter":hackathon.twitter}
     }
     return Response(response,status=status.HTTP_200_OK)
+
+
+def dashboardcustomemail(request):
+    try:
+        body = request.body
+        
+    except Exception as e:
+        print(e)
+        return Response(str(e),status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET'])
 def defaultgethackathons(request,email):
@@ -118,10 +129,14 @@ def defaultgethackathons(request,email):
     
 @api_view(['GET'])
 def dashboardteamget(request,hackathon):
-    
+        
     try:
+        q = request.query_params.get('q') or None
+        
+        
         teams = Team.objects.filter(hackathon = hackathon)
         all_fields = []
+        response = []
         for team in teams:
             members = Members.objects.filter(team = team)
             leader = "" 
@@ -130,21 +145,22 @@ def dashboardteamget(request,hackathon):
                 reg_status = "Completed"
             elif team.number_of_member < len(members):
                 reg_status = "Incompleted"
-                
-            response = {
+            team_obj = {
                     "team":{
                             "team_name" : team.team_name,
                             "team_member_count":team.number_of_member,
                             "team_count":team.number_of_member,
                             "registeration_status":reg_status,
                             "registeration_date":"",
-                            "leader" : leader,
+                            "leader" : leader ,
                         },
                     "members": []
-                }
+                } 
+            
             for member in members:
                 if member.is_leader:
                     leader = member.user.first_name + ' ' + member.user.last_name
+                
                 participation = Participation.objects.get(member=member)
                 queries = [
                     
@@ -161,7 +177,9 @@ def dashboardteamget(request,hackathon):
                     Fileupload.objects.filter(registeration=participation),
                     Tagfield.objects.filter(registeration=participation)
                 ]
+                
                 all_fields = list(chain.from_iterable(queries))
+                
                 field_res = {}
                 for index in range(0,len(all_fields)):
                     if hasattr(all_fields[index], 'long_field'):
@@ -188,10 +206,10 @@ def dashboardteamget(request,hackathon):
                     "is_leader":member.is_leader,
                     "submited_details":field_res,
                     }
-                response['members'].append(member_obj)
-                response['team']["registeration_date"] = participation.created
-                print(response)
-                
+                team_obj['members'].append(member_obj)
+                team_obj['team']["registeration_date"] = participation.created
+            response.append(team_obj)
+            print(response)
         return Response(response,status=status.HTTP_200_OK)
     except Exception as e:
         print(e)
