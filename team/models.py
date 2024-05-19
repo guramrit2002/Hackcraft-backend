@@ -1,7 +1,7 @@
 from django.db import models
 from user.models import UserProfile
 import uuid
-from hackathon_template.models import Hackathon
+from default_template.models import Hackathon
 
 # Create your models here.
 
