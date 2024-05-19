@@ -12,6 +12,8 @@ from user_participation.models import Participation
 from team.models import Team,Members
 from hackathon_template.models import Round
 from datetime import datetime
+from user_participation.models import *
+
 
 @api_view(['GET'])
 def userProfile(request,uid):
@@ -233,13 +235,41 @@ def dashboard_registered_hackathon(request, user_email):
     hackathons = []
     try:
         for member in members:
-            filter_hackathons = Participation.objects.filter(member=member)
-            
+            filter_hackathons= Participation.objects.filter(member=member)
             for filter_hackathon in filter_hackathons:
+                
                 rounds = Round.objects.filter(hackathon = filter_hackathon.form.hackathon).values('start_timeline','end_timeline').order_by('serial_number')
                 if len(rounds):
-                    start,end = rounds[0].get('start_timeline'),rounds[len(rounds)-1].get('end_timeline')
                     
+                    queries = [
+                    
+                    True if Longfieldinput.objects.filter(registeration=filter_hackathon).values('input') else False,
+                    True if Shortfieldinput.objects.filter(registeration=filter_hackathon).values('input') else False,
+                    True if Multiplefieldinput.objects.filter(registeration=filter_hackathon).values('input') else False,
+                    True if Dropdownfieldinput.objects.filter(registeration=filter_hackathon).values('input')else False,
+                    True if Togglefieldinput.objects.filter(registeration=filter_hackathon).values('input')else False,
+                    True if Stepperfieldinput.objects.filter(registeration=filter_hackathon).values('input')else False,
+                    True if Datefieldinput.objects.filter(registeration=filter_hackathon).values('input')else False,
+                    True if Sliderfieldinput.objects.filter(registeration=filter_hackathon).values('input')else False,
+                    True if (RangefieldSlider.objects.filter(registeration=filter_hackathon).values('input1') and RangefieldSlider.objects.filter(registeration=filter_hackathon).values('input2'))else False,
+                    True if LinearfieldSlider.objects.filter(registeration=filter_hackathon).values('input')else False,
+                    True if Fileupload.objects.filter(registeration=filter_hackathon).values('input')else False,
+                    True if Tagfield.objects.filter(registeration=filter_hackathon).values('input')else False
+                    ]
+                    
+                    print(queries)
+                    
+                    check_filled_count = 0
+                    
+                    for query in queries:
+                        if query:
+                            check_filled_count+=1
+                    
+                    percent_of_registeration_completed = (check_filled_count/len(queries))*100
+                    print(percent_of_registeration_completed)
+                    
+                    start,end = rounds[0].get('start_timeline'),rounds[len(rounds)-1].get('end_timeline')
+                    print(filter_hackathon)
                     hackathon_object = {
                         'hackathon_name': filter_hackathon.form.hackathon.name,
                         'hackathon_host_date': filter_hackathon.form.hackathon.created_at,
@@ -249,9 +279,10 @@ def dashboard_registered_hackathon(request, user_email):
                         'hackathon_deadline': filter_hackathon.form.hackathon.deadline,
                         'start' : start,
                         'end' : end,
-                        'tag' : []
+                        'tag' : [],
+                        "percentage":percent_of_registeration_completed
                     }
-                    
+                    print(filter_hackathon)
                     hackathons.append(hackathon_object)
                     
                     if hackathon_object['start'].date() <= datetime.now().date() and hackathon_object['end'].date() >= datetime.now().date():
@@ -263,7 +294,7 @@ def dashboard_registered_hackathon(request, user_email):
                     if hackathon_object['hackathon_deadline'] >= datetime.now().date():
                         print('Open')
                         hackathon_object['tag'].append('Open')
-                    
+                    print(hackathon_object)
                     def filterutility(hackathon_object,live,close,open,start,end):
                         open_res=[]
                         close_res = []
@@ -279,12 +310,15 @@ def dashboard_registered_hackathon(request, user_email):
                             open_res.append(hackathon_object)
                             
                         if open:
+                            print('open if')
                             print(open_res)
                             return open_res
                         elif close:
+                            print('close if')
                             print(close_res)
                             return close_res
                         elif live:
+                            print('live if')
                             print(live_res)
                             return live_res
                         elif all:

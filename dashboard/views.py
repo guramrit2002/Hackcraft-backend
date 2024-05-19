@@ -10,6 +10,7 @@ from datetime import datetime
 from .serializers import HackthonDashboardSerializer
 from itertools import chain
 
+
 @api_view(['GET'])
 def dashboardgetapi(request,hackathon):
     hackathon = Hackathon.objects.get(_id = hackathon)
@@ -135,6 +136,26 @@ def dashboardteamget(request,hackathon):
         
         
         teams = Team.objects.filter(hackathon = hackathon)
+        form = HackathonRegisterationForm.objects.get(hackathon = hackathon)
+        
+        fields = [
+                    LongAnswerField.objects.filter(form=form).label,
+                    ShortAnswerField.objects.filter(form=form).label,
+                    MultipleChoiceField.objects.filter(form=form).label,
+                    DropdownField.objects.filter(form=form).label,
+                    Toggle.objects.filter(form=form),
+                    Stepper.objects.filter(form=form),
+                    Date.objects.filter(form=form),
+                    Slider.objects.filter(form=form),
+                    Slider.objects.filter(form=form),
+                    Slider.objects.filter(form=form),
+                    File.objects.filter(form=form),
+                    Tags.objects.filter(form=form)
+                ]
+        
+        all_form_fields = list(chain.from_iterable(fields))
+        print(all_form_fields)
+        print(len(all_form_fields))
         all_fields = []
         response = []
         for team in teams:
@@ -159,7 +180,8 @@ def dashboardteamget(request,hackathon):
             
             for member in members:
                 if member.is_leader:
-                    leader = member.user.first_name + ' ' + member.user.last_name
+                    team_obj["team"]["leader"] = member.user.first_name + ' ' + member.user.last_name
+                print(leader)
                 
                 participation = Participation.objects.get(member=member)
                 queries = [
@@ -181,25 +203,25 @@ def dashboardteamget(request,hackathon):
                 all_fields = list(chain.from_iterable(queries))
                 
                 field_res = {}
-                for index in range(0,len(all_fields)):
+                for index in range(0,len(all_form_fields)):
                     if hasattr(all_fields[index], 'long_field'):
-                        field_res[all_fields[index].long_field.label] = all_fields[index].input
+                        field_res[all_form_fields[index].label] = all_fields[index].input
                     elif hasattr(all_fields[index], 'short_field'):
-                        field_res[all_fields[index].short_field.label] = all_fields[index].input
+                        field_res[all_form_fields[index].label] = all_fields[index].input
                     elif hasattr(all_fields[index], 'multiple_field'):
-                        field_res[all_fields[index].multiple_field.label]  = all_fields[index].input.get('option')
+                        field_res[all_form_fields[index].label]  = all_fields[index].input.get('option')
                     elif hasattr(all_fields[index], 'toggle') and all_fields[index].toggle:
-                        field_res[all_fields[index].toggle.label] = all_fields[index].input
+                        field_res[all_form_fields[index].label] = all_fields[index].input
                     elif hasattr(all_fields[index], 'stepper_field') and all_fields[index].stepper_field:
-                        field_res[all_fields[index].stepper_field.label] = all_fields[index].input
+                        field_res[all_form_fields[index].label] = all_fields[index].input
                     elif hasattr(all_fields[index], 'date_field') and all_fields[index].date_field:
-                        field_res[all_fields[index].date_field.label] =  all_fields[index].input
+                        field_res[all_form_fields[index].label] =  all_fields[index].input
                     elif hasattr(all_fields[index], 'slider') and all_fields[index].slider:
-                        field_res[all_fields[index].slider.label] =  all_fields[index].input
+                        field_res[all_form_fields[index].label] =  all_fields[index].input
                     elif hasattr(all_fields[index], 'file_field') and all_fields[index].file_field:
-                        field_res[all_fields[index].file_field.label] =  all_fields[index].input
+                        field_res[all_form_fields[index].label] =  all_fields[index].input
                     elif hasattr(all_fields[index], 'tags_field') and all_fields[index].tags_field:
-                        field_res[all_fields[index].tags_field] =  all_fields[index].input
+                        field_res[all_form_fields[index].tags_field] =  all_fields[index].input
                 member_obj = {
                     "user_first_name":member.user.first_name,
                     "user_last_name":member.user.last_name,
