@@ -3,6 +3,7 @@ from hackathons_registration.models import *
 from django.core.validators import MinValueValidator, MaxValueValidator
 from user.models import UserProfile
 import uuid
+from hackathon.models import Hackathons
 # Create your models here.
 
 
@@ -26,28 +27,18 @@ class Hackathon(models.Model):
     
     _id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    created_by = models.ForeignKey(UserProfile,on_delete=models.CASCADE)
-    logo = models.CharField(max_length=2000,default="",blank =True)
-    name = models.CharField(max_length=250)
-    organisation_name = models.CharField(max_length=250,default = None)
+    hackathon = models.ForeignKey(Hackathons,on_delete=models.CASCADE,blank = True)
     mode_of_conduct = models.CharField(max_length=250)
-    deadline = models.DateField(auto_now=False, auto_now_add=False)
-    team_size = models.IntegerField()
     visible = models.CharField(max_length=10, choices=VISIBLE_CHOICES)
-    start_date_time = models.DateTimeField(auto_now=False, auto_now_add=False)
     about = models.TextField()
-    brief = models.TextField(default=None)
     image1 = models.CharField(max_length=250,blank=True)
     image2 = models.CharField(max_length=250,blank=True)
     image3 = models.CharField(max_length=250,blank=True)
     image4 = models.CharField(max_length=250,blank=True)
     image5 = models.CharField(max_length=250,blank=True)
-    fee = models.CharField(max_length = 100 ,default=None,blank = True)
-    venue = models.CharField(max_length=500, default=None,)
+    venue = models.CharField(max_length=500, default=None)
     contact1_name = models.CharField(max_length=250, default=None,blank = True)
     contact2_number = models.CharField(max_length=10,default=None)
-    form_exist  = models.BooleanField(default = False)
-    number_of_registeration = models.IntegerField(blank=True,default= None,null=True)
     contact1_number = models.CharField(max_length=10,default=None)
     contact2_name = models.CharField(max_length=250, default=None,blank = True)
     discord = models.CharField(max_length = 200,blank=True,default= None)
@@ -57,10 +48,9 @@ class Hackathon(models.Model):
     facebook = models.CharField(max_length = 200,blank = True,default= '')
     twitter = models.CharField(max_length = 200,blank = True,default= '')
     linkedin = models.CharField(max_length = 200,blank = True,default= '')
-    # added now 
-    total_number_rounds = models.IntegerField(blank=True,null=True)
+    
     def __str__(self) -> str:
-        return str(self.name)
+        return str(self.hackathon.name)
 
 class ThemeHackathon(models.Model):
     '''

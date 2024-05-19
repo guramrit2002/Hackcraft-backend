@@ -1,21 +1,17 @@
 from rest_framework import serializers
 from .models import *
+from hackathon.models import Hackathons
 
+class MainHackathonSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Hackathons
+        fields = '__all__'
 
 class HackathonSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Hackathon
         fields = '__all__'
-    
-    # def to_representation(self, data):
-    #     print('data : ',data.images)
-    #     images = data.images
-    #     response = data.copy()  
-    #     del response['images']
-    #     for i in range(len(images)):
-    #         response['images'+str(i+1)] = images[i] 
-    #     return super().to_representation(response)
             
 
 class RoundSerializer(serializers.ModelSerializer):
@@ -24,8 +20,7 @@ class RoundSerializer(serializers.ModelSerializer):
         model = Round
         fields = '__all__'
         
-    def to_representation(self, instance):
-        return super().to_representation(instance)
+    
 
 class FieldSerializer(serializers.ModelSerializer):
 
