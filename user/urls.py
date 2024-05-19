@@ -10,5 +10,6 @@ urlpatterns = [
         path('otprecieve',otprecieve),
         path('otpreset/<email>',otpreset),
         path('profilecomplete/<email>',profilecompletepercentage),
-        path('registeredhackathon/<user_email>',dashboard_registered_hackathon)
+        path('registeredhackathon/<user_email>',dashboard_registered_hackathon),
+        path('prefilled/<email>',prefilleddata)
 ]

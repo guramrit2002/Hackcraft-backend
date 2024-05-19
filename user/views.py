@@ -304,3 +304,20 @@ def dashboard_registered_hackathon(request, user_email):
     except Exception as e:
         print(e)
         return Response(str(e),status= status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+def prefilleddata(request,email):
+    try:
+        user = UserProfile.objects.get(email = email)
+        response = {
+            "email":user.email,
+            "first_name" : user.first_name,
+            "last_name":user.last_name,
+            "phone":user.phone,
+            "gender":user.gender,
+            "organisation":user.organisation
+        }
+        return Response(response,status=status.HTTP_200_OK)
+    except Exception as e:
+        print(e)
+        return Response(str(e),status=status.HTTP_400_BAD_REQUEST)
