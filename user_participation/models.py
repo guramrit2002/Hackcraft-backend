@@ -236,7 +236,7 @@ class Fileupload(models.Model):
         on_delete=models.CASCADE
         )
     file_field = models.ForeignKey(
-        Fileupload,
+        File,
         on_delete=models.CASCADE,
         null=True
     )
