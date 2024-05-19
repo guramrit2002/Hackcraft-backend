@@ -1,0 +1,147 @@
+from django.db import models
+from hackathons_registration.models import *
+from django.core.validators import MinValueValidator, MaxValueValidator
+from user.models import UserProfile
+import uuid
+from hackathon.models import Hackathons
+# Create your models here.
+
+
+VISIBLE_CHOICES = (
+    ('Public', 'Public'),
+    ('Private', 'Private')
+)
+ALIGN_CHOICES = (
+    ('right', 'right'),
+    ('left', 'left'),
+    ('center', 'center'),
+    ('justify', 'justify')
+)
+FIELD_CHOICE = (
+    ('text', 'text'),
+    ('container', 'container'),
+)
+
+
+class Hackathon(models.Model):
+    
+    _id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    hackathon = models.ForeignKey(Hackathons,on_delete=models.CASCADE,blank = True)
+    mode_of_conduct = models.CharField(max_length=250)
+    visible = models.CharField(max_length=10, choices=VISIBLE_CHOICES)
+    about = models.TextField()
+    image1 = models.CharField(max_length=250,blank=True)
+    image2 = models.CharField(max_length=250,blank=True)
+    image3 = models.CharField(max_length=250,blank=True)
+    image4 = models.CharField(max_length=250,blank=True)
+    image5 = models.CharField(max_length=250,blank=True)
+    venue = models.CharField(max_length=500, default=None)
+    contact1_name = models.CharField(max_length=250, default=None,blank = True)
+    contact2_number = models.CharField(max_length=10,default=None)
+    contact1_number = models.CharField(max_length=10,default=None)
+    contact2_name = models.CharField(max_length=250, default=None,blank = True)
+    discord = models.CharField(max_length = 200,blank=True,default= None)
+    email = models.EmailField(blank=True,default= None)
+    website = models.CharField(max_length=100,blank = True,default= None)
+    github = models.CharField(max_length = 200,blank = True,default= '')
+    facebook = models.CharField(max_length = 200,blank = True,default= '')
+    twitter = models.CharField(max_length = 200,blank = True,default= '')
+    linkedin = models.CharField(max_length = 200,blank = True,default= '')
+    
+    def __str__(self) -> str:
+        return str(self.hackathon.name)
+
+class ThemeHackathon(models.Model):
+    '''
+    tags of hackathon data
+    '''
+    _id = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, editable=False, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    theme = models.CharField(max_length = 200)
+    
+    def __str__(self) -> str:
+        return self.theme
+
+class HackathonViews(models.Model):
+    _id = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, editable=False, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(UserProfile,on_delete=models.CASCADE)
+    hackathon = models.ForeignKey(Hackathon,on_delete=models.CASCADE,null=True)
+    view = models.PositiveIntegerField()
+    
+    def __str__(self):
+        return self.user.email
+
+class Round(models.Model):
+    _id = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, editable=False, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    hackathon = models.ForeignKey(Hackathon, on_delete=models.CASCADE)
+    serial_number = models.IntegerField()
+    name = models.CharField(max_length=20)
+    description = models.TextField()
+    start_timeline = models.DateTimeField(auto_now=False, auto_now_add=False)
+    end_timeline = models.DateTimeField(auto_now=False, auto_now_add=False)
+    
+    def __str__(self) -> str:
+        return str(self._id)
+
+class Field(models.Model):
+    _id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
+    hackathon = models.ForeignKey(Hackathon,on_delete = models.CASCADE,blank = True)
+    name = models.CharField(max_length=200,blank=True)
+    type = models.CharField(choices = FIELD_CHOICE, max_length = 200,blank=True)
+    
+    def __str__(self) -> str:
+        return str(self.name)
+
+
+class Textproperties(models.Model):
+    _id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
+    field = models.OneToOneField(Field,on_delete = models.CASCADE,blank=True)
+    font = models.CharField(max_length=200,blank=True)
+    size = models.IntegerField(blank=True)
+    text_color = models.CharField(max_length=200,null=True,blank=True)
+    font_weight = models.IntegerField(validators=[
+        MinValueValidator(
+            limit_value=100, message='Value must be greater than or equal to {limit_value}.'),
+        MaxValueValidator(
+            limit_value=900, message='Value must be less than or equal to {limit_value}.')
+    ],null=True,blank=True)
+    italics = models.BooleanField(blank=True)
+    underline = models.BooleanField(blank=True)
+    strikethrogh = models.BooleanField(blank=True)
+    upper_case = models.BooleanField(blank=True)
+    align = models.CharField(choices=ALIGN_CHOICES, max_length=10)
+    letter_spacing = models.IntegerField(blank=True)
+    line_height = models.IntegerField(blank=True,default=0)
+    
+    def __str__(self) -> str:
+        return str(self._id)
+
+class Container(models.Model):
+    _id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
+    hackathon = models.ForeignKey(Hackathon,on_delete = models.CASCADE,blank = True)
+    name = models.CharField(max_length=200)
+    type = models.CharField(choices = FIELD_CHOICE, max_length = 200)
+    
+    def __str__(self) -> str:
+        return str(self.name)
+    
+class Containerproperty(models.Model):
+    _id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
+    container = models.OneToOneField(Container, on_delete = models.CASCADE,null=True,blank=True)
+    Color = models.CharField(max_length=200,blank=True)
+    border_color = models.CharField(max_length=200,blank=True)
+    border_radius= models.FloatField(blank=True)
+    box_shadow_color = models.CharField(max_length=200,blank=True)
+    blur_radius = models.FloatField(blank=True)
+    focused_border_color = models.CharField(max_length=200,blank=True)
+    border_width = models.IntegerField(blank=True)
+    height = models.IntegerField(blank=True)
+    
+    def __str__(self) -> str:
+        return str(self._id)

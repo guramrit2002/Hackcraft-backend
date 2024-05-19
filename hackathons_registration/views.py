@@ -6,7 +6,7 @@ from rest_framework.decorators import api_view
 from rest_framework import status
 import uuid
 from django.shortcuts import get_object_or_404
-from hackathon_template.serializers import HackathonSerializer
+from default_template.serializers import HackathonSerializer
 
 
 @api_view(['GET'])

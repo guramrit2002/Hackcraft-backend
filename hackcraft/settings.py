@@ -30,16 +30,22 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # installed
     'rest_framework',
     'corsheaders',
-    'hackathons_registration',
-    'hackathon_template',
-    'user',
-    'team',
-    'user_participation',
+    # custom apps
     'anonymous',
+    'custom_template',
     'dashboard',
-    'hackathon'
+    'default_template',
+    'hackathon',
+    'hackathons_registration',
+    'team',
+    'user',
+    'user_participation',
+    
+    
+    
 ]
 
 MIDDLEWARE = [
