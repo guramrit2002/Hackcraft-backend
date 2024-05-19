@@ -1,6 +1,6 @@
 from rest_framework.serializers import ModelSerializer
 from rest_framework.serializers import Serializer
-from .models import Team,Members
+from .models import Team,Members,Teamrequestedmembers
 from user_participation.models import *
 from user_participation.serializers import *
 # from .models import AnonymousUser
@@ -107,4 +107,10 @@ class TeamGetserializer(ModelSerializer):
 class TeamSerializer(ModelSerializer):
     class Meta:
         model = Team
+        fields = '__all__'
+        
+class RequestedEmail(ModelSerializer):
+    
+    class Meta:
+        model = Teamrequestedmembers
         fields = '__all__'

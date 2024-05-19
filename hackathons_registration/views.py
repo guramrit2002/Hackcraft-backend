@@ -69,7 +69,6 @@ def hackathon_registration_form_get_specific(request, id):
                 i['type'] = 'dropdown'
                 i['options'] = DropdownOptionsSerializer(OptionDropdown.objects.filter(field = i['_id']),many = True).data
             for i in data:
-                print(i)
                 serialized_data.append(i)
         
         # Serialize Radio Field
@@ -81,7 +80,6 @@ def hackathon_registration_form_get_specific(request, id):
                 i['type'] = 'radio'
                 i['options'] = OptionSerializer(Options.objects.filter(field = i['_id'], related='RADIO'),many = True).data
             for i in data:
-                print(i)
                 serialized_data.append(i)
         
         # Serialize Check Field 
@@ -92,7 +90,6 @@ def hackathon_registration_form_get_specific(request, id):
                 i['type'] = 'checkbox'
                 i['options'] = OptionSerializer(Options.objects.filter(field = i['_id'], related='CHECK'),many = True).data
             for i in data:
-                print(i)
                 serialized_data.append(i)
 
         # Serialize toggle Field
@@ -156,7 +153,7 @@ def hackathon_registration_form_get_specific(request, id):
 
 
         # Serialize File Upload Field
-        fileuploadfields = Fileupload.objects.filter(form=form)
+        fileuploadfields = File.objects.filter(form=form)
         if fileuploadfields:
             data = FileuploadSerializer(fileuploadfields, many=True).data
             for i in data:
@@ -179,13 +176,13 @@ def hackathon_registration_form_get_specific(request, id):
 
             
         sorted_fields = []
-        
-        data = serialized_data
-        print(data)
-        for i in range(1,form.number_of_fields):
+        print(form.number_of_fields)
+        for i in range(0,form.number_of_fields):
             print(i)
-            for j in data:
-                if j['serial_number'] == i :
+            print(type(serialized_data))
+            for j in serialized_data:
+                print('data : ',j)
+                if j['serial_number'] == i+1 :
                     sorted_fields.append(j)                    
         
         #from here sections will be fetched and serialized 
@@ -203,6 +200,7 @@ def hackathon_registration_form_get_specific(request, id):
 
     except Exception as e:
         print(e)
+        
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 

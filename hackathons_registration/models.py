@@ -160,7 +160,7 @@ class Slider(models.Model):
     def __str__(self)-> str:
         return str(self._id)
     
-class Fileupload(models.Model):
+class File(models.Model):
     
     _id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
     created = models.DateTimeField(auto_now_add=True)

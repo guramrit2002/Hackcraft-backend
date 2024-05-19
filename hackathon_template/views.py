@@ -20,7 +20,7 @@ def gethackathon(request):
                 'team_size': hackathon.team_size,
                 'mode_of_conduct': hackathon.mode_of_conduct,
                 'venue': hackathon.venue,
-                'Logo': hackathon.logo.url if hackathon.logo else '',
+                'Logo': hackathon.logo if hackathon.logo else '',
                 'Image': [hackathon.image1,hackathon.image2,hackathon.image3,hackathon.image4,hackathon.image5],
                 'social':{
                     "discord":hackathon.discord,
@@ -47,7 +47,7 @@ def defaultpage(request, id):
         images = []
         for i in range(5):
             if hackathon_data.get('image'+str(i+1))!="":
-                hackathon_image = hackathon_data.get(hackathon_data['image'+str(i)])
+                hackathon_image = hackathon_data.get(hackathon_data['image'+str(i+1)])
                 images.append(hackathon_image)
         
         del hackathon_data['image1']

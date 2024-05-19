@@ -4,8 +4,8 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status
 from user.models import UserProfile
-from .serializers import TeamSerializer,Memberserializer,TeamGetserializer
-# from user.models import *
+from .serializers import TeamSerializer,Memberserializer,TeamGetserializer,Teamrequestedmembers
+from .models import *
 
 @api_view(['GET'])
 def get_participation_by_hackathons(request,team_id):
@@ -19,6 +19,7 @@ def teampost(request):
         body = request.data
         team_data = body.get('team')
         leader = body.get('leader')
+        emails = body.get('emails')
         try:
             team = Team.objects.get(team_name = team_data['team_name'])
             return Response({
@@ -37,6 +38,17 @@ def teampost(request):
                 leader_serializer = Memberserializer(data=leader,many = False)
                 if leader_serializer.is_valid():
                     leader_serializer.save()
+                    for email in emails:
+                        requested_emails = {
+                            "team":team._id,
+                            "email":email,
+                            "hackathon":team_data['hackathon']
+                        }
+                        email_serializer = Teamrequestedmembers(data = requested_emails,many = False)
+                        if email_serializer.is_valid():
+                            email_serializer.save()
+                        else:
+                            return Response({"error":email_serializer.errors})
                     return Response({
                         "message":"new team is created",
                         "team_id":team_id,
@@ -76,6 +88,72 @@ def memberpost(request):
     except UserProfile.DoesNotExist:
         print('user does not exist')
         return Response('user does not exist',status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        print(e)
+        return Response(str(e),status=status.HTTP_400_BAD_REQUEST)
+    
+@api_view(['GET'])
+def usertype(request,email,hackathon):
+    try:
+        
+        member = Members.objects.get(user = UserProfile.objects.get(email = email))
+        if member:
+            is_leader = member.is_leader or None
+            if is_leader:
+                return Response({
+                "role" : "leader",
+                'message':"already a leader of a team"
+                })
+            else:
+                return Response({
+                "role" : "member",
+                'message':"already a member of a team"
+                })
+    except UserProfile.DoesNotExist:    
+            members_requested = Teamrequestedmembers.objects.filter(hackathon = hackathon,email = email)
+            if members_requested:
+                    try:
+                        user = UserProfile.objects.get(email=email)
+                        return Response({
+                            "role":"pending",
+                            "is_user":True,
+                            "message":"user exists but not a member"
+                        })
+                    except UserProfile.DoesNotExist:
+                        return Response({
+                            "role":"pending",
+                            "is_user":False,
+                            "message":"user does not exists and also not a member"
+                        })
+                    
+            else:
+                return Response({
+                    "role":"firstuser",
+                    "message":"new leader"
+                    })
+    except Members.DoesNotExist:
+        members_requested = Teamrequestedmembers.objects.filter(hackathon = hackathon,email = email)
+        if members_requested:
+                try:
+                    user = UserProfile.objects.get(email=email)
+                    return Response({
+                        "role":"pending",
+                        "is_user":True,
+                        "message":"user exists but not a member"
+                    })
+                except UserProfile.DoesNotExist:
+                    return Response({
+                        "role":"pending",
+                        "is_user":False,
+                        "message":"user does not exists and also not a member"
+                    })
+                
+        else:
+                return Response({
+                    "role":"firstuser",
+                    "message":"new leader"
+                    })
+                
     except Exception as e:
         print(e)
         return Response(str(e),status=status.HTTP_400_BAD_REQUEST)
