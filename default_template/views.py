@@ -51,6 +51,7 @@ def defaultpage(request, id):
     try:
         hackathon = Hackathons.objects.get(_id = id)
         default = Hackathon.objects.get(hackathon = hackathon._id)
+        print(default.image1)
         round = Round.objects.filter(hackathon = default)
         try:
             hackathon_main_serializer = MainHackathonSerializer(hackathon,many = False)
@@ -63,13 +64,19 @@ def defaultpage(request, id):
         except Exception as e:
             print('error : ',e)
             return Response(str(e),status=status.HTTP_400_BAD_REQUEST)
-        
-        
+        print(hackathon_data)
+        print('image1 : ',hackathon_data['image1'])
         images = []
-        for i in range(5):
-            if hackathon_data.get('image'+str(i+1))!="":
-                hackathon_image = hackathon_data.get(hackathon_data['image'+str(i+1)])
+        for i in range(0,5):
+            print(i+1)
+            print('image'+str(i+1))
+            print(hackathon_data['image'+str(i+1)])
+            if hackathon_data.get('image'+str(i+1)):
+                hackathon_image = hackathon_data['image'+str(i+1)]
+                print(hackathon_data)
                 images.append(hackathon_image)
+                print(images)
+            
         
         del hackathon_data['image1']
         del hackathon_data['image2']
@@ -100,10 +107,36 @@ def defaultpage(request, id):
             container_data['properties'] = property_serializer.data
             containers_data.append(container_data)
         
-        # hackathon = 
+        
+        hackathon_major_data = {
+    
+            "logo":hackathon_main_serializer.data.get('logo'),
+            "name":hackathon_main_serializer.data.get('name'),
+            "organisation_name":hackathon_main_serializer.data.get('organisation_name'),
+            "brief":hackathon_main_serializer.data.get("brief"),
+            "deadline":hackathon_main_serializer.data.get('deadline'),
+            "start_date_time":hackathon_main_serializer.data.get('start_date_time'),
+            "team_size":hackathon_main_serializer.data.get('team_size'),
+            "fee":hackathon_main_serializer.data.get("fee"),
+            "mode_of_cunduct":hackathon_data.get('mode_of_conduct'),
+            "visible":hackathon_data.get('visible'),
+            "about":hackathon_data.get('about'),
+            "contact1_name": hackathon_data.get('contact1_name'),
+            "contact2_number": hackathon_data.get('contact1_number'),
+            "contact1_number": hackathon_data.get('contact2_name'),
+            "contact2_name": hackathon_data.get('contact2_number'),
+            "discord": hackathon_data.get('discord'),
+            "email": hackathon_data.get('email'),
+            "website": hackathon_data.get('website'),
+            "github": hackathon_data.get('github'),
+            "facebook": hackathon_data.get('facebook'),
+            "twitter": hackathon_data.get('twitter'),
+            "linkedin": hackathon_data.get('linkedin'),
+            "images":hackathon_data.get('images')
+        }
+        print(hackathon_major_data)
         response_data = {
-            'hackathon':hackathon_main_serializer.data,
-            'default': hackathon_data,
+            'hackathon':hackathon_major_data,
             'round':round_serializer.data,
             'fields': fields_data,
             'containers': containers_data
@@ -195,7 +228,6 @@ def defaultpost(request):
                         else:
                             print(container_serializer.errors)
                             return Response({'error':container_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
-                        
                     return Response({'hackathon created':main_hackathon.data},status=status.HTTP_201_CREATED)
                 else:
                     print(hackathon_serializer.errors)
