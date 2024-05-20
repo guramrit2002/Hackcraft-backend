@@ -5,6 +5,7 @@ from rest_framework import status
 from .serializers import *
 from hackathon.models import *
 from itertools import chain
+from default_template.models import Hackathon
 # Create your views here.
 
 @api_view(['GET'])
@@ -12,28 +13,34 @@ def gethackathon(request):
     try:
         hackathons = Hackathons.objects.filter(form_exist = True)
         print(hackathons)
-        modified_data = [
-            {
-                '_id': hackathon._id,
-                'name': hackathon.name,
-                'organisation_name': hackathon.organisation_name,
-                'price': hackathon.fee,
-                'start_date_time': hackathon.start_date_time,
-                'team_size': hackathon.team_size,
-                'mode_of_conduct': hackathon.mode_of_conduct,
-                'venue': hackathon.venue,
-                'Logo': hackathon.logo if hackathon.logo else '',
-                'Image': [hackathon.image1,hackathon.image2,hackathon.image3,hackathon.image4,hackathon.image5],
-                'social':{
-                    "discord":hackathon.discord,
-                    "facebook":hackathon.facebook,
-                    "email":hackathon.email,
-                    "twitter":hackathon.twitter,
-                    "linkedin":hackathon.linkedin
-                }
-            }
-            for hackathon in hackathons
-        ]
+        modified_data = []
+        for hackathon in hackathons:
+            defaults = Hackathon.objects.filter(hackathon = hackathon ) 
+            for default in defaults:
+                modified_data.append(
+                    {
+                        '_id': hackathon._id,
+                        'name': hackathon.name,
+                        'organisation_name': hackathon.organisation_name,
+                        'price': hackathon.fee,
+                        'start_date_time': hackathon.start_date_time,
+                        'team_size': hackathon.team_size,
+                        'mode_of_conduct': default.mode_of_conduct,
+                        'venue': default.venue,
+                        'Logo': hackathon.logo if hackathon.logo else '',
+                        'Image': [default.image1,default.image2,default.image3,default.image4,default.image5],
+                        'social':{
+                            "discord":default.discord,
+                            "facebook":default.facebook,
+                            "email":default.email,
+                            "twitter":default.twitter,
+                            "linkedin":default.linkedin
+                        }
+                    }
+                )
+        
+        
+        
         return Response(modified_data,status=status.HTTP_200_OK)
     except Exception as e:
         print(e)
