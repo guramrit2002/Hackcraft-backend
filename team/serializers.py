@@ -14,7 +14,7 @@ class FieldSerializer(Serializer):
     
     def to_representation(self, data):
         app_id = data.get('application_id')
-        
+        print(app_id)
         long_fields = LongSerializer(Longfieldinput.objects.filter(registeration=app_id), many=True).data
         short_fields = ShortSerializer(Shortfieldinput.objects.filter(registeration=app_id), many=True).data
         multiple_fields = MultiplefieldSerializer(Multiplefieldinput.objects.filter(registeration=app_id), many=True).data
@@ -27,30 +27,35 @@ class FieldSerializer(Serializer):
         file_fields = FileuploadSerializer(Fileupload.objects.filter(registeration=app_id), many=True).data
         tag_fields = TagfieldSerializer(Tagfield.objects.filter(registeration=app_id), many=True).data
         response = []
+        print('long : ',long_fields)
+        print('multiple : ',multiple_fields)
         # Concatenate all the serialized data into a single list
         all_fields = []
         if long_fields :
+            print('long')
             all_fields+=long_fields
-        elif short_fields : 
+        if short_fields : 
             all_fields += short_fields
-        elif multiple_fields:
+        if multiple_fields:
+            print('multiple')
             all_fields+=multiple_fields
-        elif toggle_fields:
+        if toggle_fields:
             all_fields+=toggle_fields
-        elif stepper_fields:
+        if stepper_fields:
             all_fields+=stepper_fields
-        elif date_fields:
+        if date_fields:
             all_fields+=date_fields
-        elif slider_fields:
+        if slider_fields:
             all_fields += slider_fields
-        elif range_fields:
+        if range_fields:
             all_fields+=range_fields
-        elif linear_fields:
+        if linear_fields:
             all_fields+=linear_fields
-        elif file_fields:
+        if file_fields:
             all_fields+=file_fields
-        elif tag_fields:
+        if tag_fields:
             all_fields+=tag_fields
+        print('all fields : ',all_fields)
         field_map = {field['serial_number']: field for field in all_fields}
         for i in range(1, len(field_map.keys())+1):
             print('i : ',i)
@@ -76,16 +81,20 @@ class TeamGetserializer(ModelSerializer):
                 if leader_present:
                     serializer = Memberserializer(members_qs, many=True)
                     serialized_members = serializer.data
+                    print('serialized members : ',serialized_members)
                     result = {'team': data_representation, 'members': []}
+                    print('result : ',result)
+                    print('serialized members2 : ',serialized_members)
                     for member_data in serialized_members:
+                        print(member_data)
                         participation = Participation.objects.get(member=member_data.get('_id'))
-                        
+                        print(participation)
                         participation_serializer = ParticipationSerializer(participation,many=False)
                         participation_qs = participation_serializer.data
                         application_data=[]
                         fields_serializer = FieldSerializer({'application_id': participation_qs.get('_id'), 'form': participation_qs.get('form')})
                         fields_data = fields_serializer.data['fields']
-
+                        print(fields_data)
                         application_data.append({
                                 'required_data': participation_qs,
                                 'is_leader': member_data.get('is_leader'),
