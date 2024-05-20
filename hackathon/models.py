@@ -29,7 +29,8 @@ class Hackathons(models.Model):
     start_date_time = models.DateTimeField(
         auto_now=False, 
         auto_now_add=False)
-    team_size = models.IntegerField()
+    team_size_min = models.IntegerField()
+    team_size_max = models.IntegerField(blank=True,null=True)
     fee = models.CharField(
         max_length = 100 ,
         default=None,

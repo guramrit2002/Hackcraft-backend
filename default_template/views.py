@@ -116,7 +116,7 @@ def defaultpage(request, id):
             "brief":hackathon_main_serializer.data.get("brief"),
             "deadline":hackathon_main_serializer.data.get('deadline'),
             "start_date_time":hackathon_main_serializer.data.get('start_date_time'),
-            "team_size":hackathon_main_serializer.data.get('team_size'),
+            "team_size":[hackathon_main_serializer.data.get('team_size_min'),hackathon_main_serializer.data.get('team_size_max')],
             "fee":hackathon_main_serializer.data.get("fee"),
             "mode_of_cunduct":hackathon_data.get('mode_of_conduct'),
             "visible":hackathon_data.get('visible'),
