@@ -6,13 +6,13 @@ from rest_framework.decorators import api_view
 from rest_framework import status
 import uuid
 from django.shortcuts import get_object_or_404
-from hackathon_template.serializers import HackathonSerializer
+from default_template.serializers import HackathonSerializer
 
 
 @api_view(['GET'])
 def hackathonGet(request):
     try:
-        data = Hackathon.objects.all()
+        data = Hackathons.objects.all()
         serializer = HackathonSerializer(data, many=True)
         print(serializer.data)
         return Response({"data": serializer.data}, status=status.HTTP_200_OK)
@@ -36,7 +36,8 @@ def hackathon_registration_form_get_specific(request, id):
     try:
         
         # hakathon registerations form fetching using hackathon id
-        form = get_object_or_404(HackathonRegisterationForm, hackathon___id=id)
+        form = get_object_or_404(HackathonRegisterationForm, hackathons = Hackathons.objects.get(id = id))
+        print(form)
         formserializer = HackathonRegistrationFormSerializer(form)
         
         # Initialize a array to collect all serialized data
@@ -214,7 +215,7 @@ def hackathon_registeration_form_post(request,id):
         fields__input = body['fields']
         sections = body['sections']
         # creating new form with the hackathon id 
-        form_input['hackathon'] = str(id)
+        form_input['hackathon'] = id
         try:
             print('form key is ready for serialization')
             form_serializer = HackathonRegistrationFormSerializer(data = form_input)
@@ -225,7 +226,7 @@ def hackathon_registeration_form_post(request,id):
                 
                 # changin state of hackathon from form not existing to form existing
                 
-                hackathon = Hackathon.objects.get(_id = id)
+                hackathon = Hackathons.objects.get(_id = id)
                 hackathon.form_exist = True
                 hackathon.save()
                 

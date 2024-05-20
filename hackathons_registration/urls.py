@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import *
-from hackathon_template.views import *
+from default_template.views import *
 
 urlpatterns = [
     path('',gethackathon,name="hackathon"),

@@ -6,11 +6,11 @@ from firebase_admin import auth
 from .models import UserProfile,Skill,OTP
 from .serializers import Userprofileserializer,Userskill
 from django.core.mail import send_mail
-from hackathon_template.models import Hackathon
-from hackathon_template.serializers import HackathonSerializer
+from default_template.models import Hackathon
+from default_template.serializers import HackathonSerializer
 from user_participation.models import Participation
 from team.models import Team,Members
-from hackathon_template.models import Round
+from default_template.models import Round
 from datetime import datetime
 from user_participation.models import *
 

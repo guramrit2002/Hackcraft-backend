@@ -4,7 +4,7 @@ from rest_framework import status
 from user.models import UserProfile
 from team.models import Team, Members
 from user_participation.models import *
-from hackathon_template.models import HackathonViews,Hackathon,Round
+from default_template.models import HackathonViews,Hackathon,Round
 from rest_framework import status
 from datetime import datetime
 from .serializers import HackthonDashboardSerializer

@@ -1,6 +1,5 @@
 from .models import Team,Members
 from rest_framework.response import Response
-# from .serializers import Teamserializer,Memberserializer
 from rest_framework.decorators import api_view
 from rest_framework import status
 from user.models import UserProfile
