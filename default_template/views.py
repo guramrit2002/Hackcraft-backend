@@ -109,7 +109,7 @@ def defaultpage(request, id):
         
         
         hackathon_major_data = {
-    
+            "_id":hackathon_main_serializer.data.get('_id'),
             "logo":hackathon_main_serializer.data.get('logo'),
             "name":hackathon_main_serializer.data.get('name'),
             "organisation_name":hackathon_main_serializer.data.get('organisation_name'),
@@ -120,6 +120,7 @@ def defaultpage(request, id):
             "fee":hackathon_main_serializer.data.get("fee"),
             "mode_of_cunduct":hackathon_data.get('mode_of_conduct'),
             "visible":hackathon_data.get('visible'),
+            "venue":hackathon_data.get('venue'),
             "about":hackathon_data.get('about'),
             "contact1_name": hackathon_data.get('contact1_name'),
             "contact2_number": hackathon_data.get('contact1_number'),
@@ -133,7 +134,7 @@ def defaultpage(request, id):
             "twitter": hackathon_data.get('twitter'),
             "linkedin": hackathon_data.get('linkedin'),
             "images":hackathon_data.get('images'),
-            "total_number_rounds":hackathon_data.get('total_number_rounds')
+            "total_number_rounds":hackathon_main_serializer.data.get('total_number_rounds')
         }
         print(hackathon_major_data)
         response_data = {
