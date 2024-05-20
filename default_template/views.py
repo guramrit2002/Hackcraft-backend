@@ -4,6 +4,7 @@ from rest_framework.decorators import api_view
 from rest_framework import status
 from .serializers import *
 from hackathon.models import *
+from itertools import chain
 # Create your views here.
 
 @api_view(['GET'])
@@ -92,6 +93,7 @@ def defaultpage(request, id):
             container_data['properties'] = property_serializer.data
             containers_data.append(container_data)
         
+        # hackathon = 
         response_data = {
             'hackathon':hackathon_main_serializer.data,
             'default': hackathon_data,
@@ -117,8 +119,8 @@ def defaultpost(request):
     
     if request.method == 'POST':
         body = request.data
-        # print(body)
         if body :
+            
             hackathon = body['hackathon']
             default = body['default']
             images = default['images']
@@ -186,7 +188,8 @@ def defaultpost(request):
                         else:
                             print(container_serializer.errors)
                             return Response({'error':container_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
-                    return Response({'hackathon created':hackathon_serializer.data},status=status.HTTP_201_CREATED)
+                        
+                    return Response({'hackathon created':main_hackathon.data},status=status.HTTP_201_CREATED)
                 else:
                     print(hackathon_serializer.errors)
                     return Response({"error":hackathon_serializer.errors},status=status.HTTP_400_BAD_REQUEST)
