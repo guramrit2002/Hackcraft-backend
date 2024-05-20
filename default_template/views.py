@@ -132,7 +132,8 @@ def defaultpage(request, id):
             "facebook": hackathon_data.get('facebook'),
             "twitter": hackathon_data.get('twitter'),
             "linkedin": hackathon_data.get('linkedin'),
-            "images":hackathon_data.get('images')
+            "images":hackathon_data.get('images'),
+            "total_number_rounds":hackathon_data.get('total_number_rounds')
         }
         print(hackathon_major_data)
         response_data = {
