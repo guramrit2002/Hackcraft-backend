@@ -79,7 +79,7 @@ class Round(models.Model):
     _id = models.UUIDField(
         primary_key=True, default=uuid.uuid4, editable=False, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    hackathon = models.ForeignKey(Hackathon, on_delete=models.CASCADE)
+    hackathon = models.ForeignKey(Hackathons, on_delete=models.CASCADE)
     serial_number = models.IntegerField()
     name = models.CharField(max_length=20)
     description = models.TextField()

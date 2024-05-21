@@ -235,10 +235,16 @@ def dashboard_registered_hackathon(request, user_email):
     hackathons = []
     try:
         for member in members:
+            
             filter_hackathons= Participation.objects.filter(member=member)
+            print(filter_hackathons)
             for filter_hackathon in filter_hackathons:
-                
-                rounds = Round.objects.filter(hackathon = filter_hackathon.form.hackathon).values('start_timeline','end_timeline').order_by('serial_number')
+                print(filter_hackathon)
+                print(filter_hackathon.form.hackathon._id)
+                hackathon = Hackathons.objects.get(_id = filter_hackathon.form.hackathon._id)
+                print(hackathon)
+                rounds = Round.objects.filter(hackathon = hackathon._id).values('start_timeline','end_timeline').order_by('serial_number')
+                print(len(rounds))
                 if len(rounds):
                     
                     queries = [
@@ -255,9 +261,10 @@ def dashboard_registered_hackathon(request, user_email):
                     True if LinearfieldSlider.objects.filter(registeration=filter_hackathon).values('input')else False,
                     True if Fileupload.objects.filter(registeration=filter_hackathon).values('input')else False,
                     True if Tagfield.objects.filter(registeration=filter_hackathon).values('input')else False
+                    
                     ]
                     
-                    print(queries)
+                    print('queries : ',queries)
                     
                     check_filled_count = 0
                     
@@ -295,6 +302,7 @@ def dashboard_registered_hackathon(request, user_email):
                         print('Open')
                         hackathon_object['tag'].append('Open')
                     print(hackathon_object)
+                    
                     def filterutility(hackathon_object,live,close,open,start,end):
                         open_res=[]
                         close_res = []
@@ -322,9 +330,12 @@ def dashboard_registered_hackathon(request, user_email):
                             print(live_res)
                             return live_res
                         elif all:
+                            print('A;ll')
+                            print(hackathons)
                             return hackathons
                     
                     if oldest:
+                        print('oldest')
                         hackathons.sort(key=lambda x: x['hackathon_host_date'],reverse=True)
                         hackathons = filterutility(hackathon_object,live,close,open,start,end)
                         print(hackathons)
