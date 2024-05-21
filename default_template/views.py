@@ -183,10 +183,9 @@ def defaultpost(request):
             
                 if hackathon_serializer.is_valid():
                     new_default = hackathon_serializer.save()
-                
                     for i in body.get('round', []):
                         
-                        i['hackathon'] = str(new_default._id)
+                        i['hackathon'] = str(hack._id)
                         
                         round_serializer = RoundSerializer(data=i)
                         
@@ -232,10 +231,10 @@ def defaultpost(request):
                             return Response({'error':container_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
                     return Response({'hackathon created':main_hackathon.data},status=status.HTTP_201_CREATED)
                 else:
-                    print(hackathon_serializer.errors)
+                    print('hackathon error : ',hackathon_serializer.errors)
                     return Response({"error":hackathon_serializer.errors},status=status.HTTP_400_BAD_REQUEST)
             else:
-                print(main_hackathon.errors)
+                print('main hackathon error',main_hackathon.errors)
                 return Response({"error": main_hackathon.errors}, status=status.HTTP_400_BAD_REQUEST)
         else:
 
