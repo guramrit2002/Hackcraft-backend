@@ -82,6 +82,11 @@ class Dropdownfieldinput(models.Model):
         Participation, 
         on_delete=models.CASCADE
     )
+    dropdown_field = models.ForeignKey(
+        DropdownField, 
+        on_delete=models.CASCADE,
+        null = True
+    )
     # options selected 
     input = models.JSONField(default={})
     

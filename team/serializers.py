@@ -14,7 +14,6 @@ class FieldSerializer(Serializer):
     
     def to_representation(self, data):
         app_id = data.get('application_id')
-        print(app_id)
         long_fields = LongSerializer(Longfieldinput.objects.filter(registeration=app_id), many=True).data
         short_fields = ShortSerializer(Shortfieldinput.objects.filter(registeration=app_id), many=True).data
         multiple_fields = MultiplefieldSerializer(Multiplefieldinput.objects.filter(registeration=app_id), many=True).data
@@ -26,10 +25,16 @@ class FieldSerializer(Serializer):
         linear_fields = LinearSerializer(LinearfieldSlider.objects.filter(registeration=app_id), many=True).data
         file_fields = FileuploadSerializer(Fileupload.objects.filter(registeration=app_id), many=True).data
         tag_fields = TagfieldSerializer(Tagfield.objects.filter(registeration=app_id), many=True).data
+        print('dropdown : ',Dropdownfieldinput.objects.filter(registeration = app_id))
+        try:
+            dropdown_fields = DropdownfieldSerializer(Dropdownfieldinput.objects.filter(registeration = app_id),many = True).data
+            print('dropdown : ',dropdown_fields)
+        except Exception as e:
+            print('errors : ',e)
         response = []
         # Concatenate all the serialized data into a single list
         all_fields = []
-        print('multiple : ',multiple_fields)
+        
         for i in range(len(range_fields)):
             range_fields[i]['type'] = "range"
         for i in range(len(slider_fields)):
@@ -53,7 +58,6 @@ class FieldSerializer(Serializer):
         if date_fields:
             all_fields+=date_fields
         if slider_fields:
-            
             all_fields += slider_fields
         if range_fields:
             all_fields+=range_fields
@@ -63,38 +67,43 @@ class FieldSerializer(Serializer):
             all_fields+=file_fields
         if tag_fields:
             all_fields+=tag_fields
+        if dropdown_fields:
+            all_fields+=dropdown_fields
+            
         # print('all fields : ',all_fields)
         
         field_map = {field['serial_number']: field for field in all_fields}
-        
+        print(len(field_map.keys()))
         for i in range(1, len(field_map.keys())+1):
-            
+            print('map : ',field_map[i].keys())
             if 'long_field' in field_map[i].keys():
                 print('long from field serializer')
-                field_map[i]['type'] = 'long_field'
+                field_map[i]['type'] = 'long'
             if 'short_field' in field_map[i].keys():
                 print('short from field serializer')
-                field_map[i]['type'] = 'short_field'
+                field_map[i]['type'] = 'short'
             if 'toggle' in field_map[i].keys():
                 print('toggle from field serializer')
-                field_map[i]['type'] = 'toggle_fields'
+                field_map[i]['type'] = 'toggle'
             if 'stepper_field' in field_map[i].keys():
                 print('stepper from field serializer')
-                field_map[i]['type'] = 'stepper_fields'
-            if 'date_fields' in field_map[i].keys():
+                field_map[i]['type'] = 'stepper'
+            if 'date_field' in field_map[i].keys():
                 print('date from field serializer')
-                field_map[i]['type'] = 'date_fields'
+                field_map[i]['type'] = 'date'
             if 'file' in field_map[i].keys():
                 print('file from field serializer')
-                field_map[i]['type'] = 'file_fields'
+                field_map[i]['type'] = 'file'
             if 'tags_field' in field_map[i].keys():
                 print('tag from field serializer')
-                field_map[i]['type'] = 'tag_fields'
-                
-                
+                field_map[i]['type'] = 'tag'
+            if 'dropdown_field' in field_map[i].keys():
+                print('dropdown from field serializer')
+                print(field_map[i])
+                field_map[i]['type'] = 'dropdown'
             if field_map.get(i):
-                # print('field with serial number : ',field_map.get(i))
                 response.append(field_map.get(i))
+            print(response)
         return {"fields": response}
 class TeamGetserializer(ModelSerializer):
     class Meta:
@@ -128,7 +137,7 @@ class TeamGetserializer(ModelSerializer):
                             participation = Participation.objects.get(member=member)
                             participation_serializer = ParticipationSerializer(participation,many=False)
                             participation_qs = participation_serializer.data
-                            participation_qs['college_name'] = user.organisation
+                            participation_qs['participant_college'] = user.organisation
                             print('participation : ',participation_qs)
                             
                             application_data=[]

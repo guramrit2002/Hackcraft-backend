@@ -9,6 +9,7 @@ from .models import *
 @api_view(['GET'])
 def get_participation_by_hackathons(request,team_id):
     team = Team.objects.get(_id=team_id)
+    print(team)
     serializer = TeamGetserializer(team,many = False)
     return Response(serializer.data,status=status.HTTP_200_OK)
 

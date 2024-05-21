@@ -36,14 +36,12 @@ def hackathon_registration_form_get_specific(request, id):
     try:
         
         # hakathon registerations form fetching using hackathon id
-        form = get_object_or_404(HackathonRegisterationForm, hackathons = Hackathons.objects.get(id = id))
-        print(form)
+        form = get_object_or_404(HackathonRegisterationForm, hackathon = Hackathons.objects.get(_id = id))
+        # print(form)
         formserializer = HackathonRegistrationFormSerializer(form)
-        
         # Initialize a array to collect all serialized data
         serialized_data = []
         # from here fields start fetching and serializing
-        
         # Serialize LongAnswerField
         longfields = LongAnswerField.objects.filter(form=form)
         if longfields:
@@ -74,6 +72,7 @@ def hackathon_registration_form_get_specific(request, id):
         
         # Serialize Radio Field
         radiofields = MultipleChoiceField.objects.filter(form=form, type='radio')
+        print('radio_fields : ',radiofields)
         if serialized_data:
             data = MultipleChoiceFieldSerializer(radiofields, many=True).data
             
@@ -85,12 +84,15 @@ def hackathon_registration_form_get_specific(request, id):
         
         # Serialize Check Field 
         checkfields = MultipleChoiceField.objects.filter(form=form, type='checkbox')
+        print('check fields : ',checkfields)
         if checkfields:
             data = MultipleChoiceFieldSerializer(checkfields, many=True).data
             for i in data:
                 i['type'] = 'checkbox'
+                print(i)
                 i['options'] = OptionSerializer(Options.objects.filter(field = i['_id'], related='CHECK'),many = True).data
             for i in data:
+                
                 serialized_data.append(i)
 
         # Serialize toggle Field
@@ -179,10 +181,9 @@ def hackathon_registration_form_get_specific(request, id):
         sorted_fields = []
         print(form.number_of_fields)
         for i in range(0,form.number_of_fields):
-            print(i)
-            print(type(serialized_data))
+            # print(i)
+            # print(type(serialized_data))
             for j in serialized_data:
-                print('data : ',j)
                 if j['serial_number'] == i+1 :
                     sorted_fields.append(j)                    
         
@@ -222,8 +223,8 @@ def hackathon_registeration_form_post(request,id):
             if form_serializer.is_valid():
                 # print('valid')
                 form = form_serializer.save()
-                print(form)
-                
+                # print(form)
+                # 
                 # changin state of hackathon from form not existing to form existing
                 
                 hackathon = Hackathons.objects.get(_id = id)
@@ -249,17 +250,26 @@ def hackathon_registeration_form_post(request,id):
                             shortserializer.save()
                     
                     elif i['type'] == 'radio':
-                        print('radio')
                         i['form'] = form._id
+                        print('form : ',i['form'])
                         multiplequestionserializer = MultipleChoiceFieldSerializer(data=i)
+                        
                         if multiplequestionserializer.is_valid():
+                            print('valid')
                             field = multiplequestionserializer.save()
+                            print('fields  :  ',field)
+                            print('options : ',i["options"])
                             for option in i['options']:
+                                option['related'] = 'RADIO'
                                 option['field'] = field._id 
                                 optionserializer = OptionSerializer(data=option)
                                 if optionserializer.is_valid():
                                     optionserializer.save()
                                     print(optionserializer.data.get('text'))
+                                else:
+                                    print(optionserializer.errors)
+                        else:
+                            print(multiplequestionserializer.errors)
                     
                     elif i['type'] == 'checkbox':
                         print('check')
@@ -268,6 +278,7 @@ def hackathon_registeration_form_post(request,id):
                         if multiplequestionserializer.is_valid():
                             field = multiplequestionserializer.save()
                             for option in i['options']:
+                                option['related'] = 'CHECK'
                                 option['field'] = field._id 
                                 optionserializer = OptionSerializer(data=option)
                                 if optionserializer.is_valid():
