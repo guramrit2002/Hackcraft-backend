@@ -51,8 +51,7 @@ def defaultpage(request, id):
     try:
         hackathon = Hackathons.objects.get(_id = id)
         default = Hackathon.objects.get(hackathon = hackathon._id)
-        print(default.image1)
-        round = Round.objects.filter(hackathon = default)
+        round = Round.objects.filter(hackathon = default._id)
         try:
             hackathon_main_serializer = MainHackathonSerializer(hackathon,many = False)
         except Exception as e:
@@ -158,7 +157,7 @@ def defaultpage(request, id):
 
 @api_view(['POST'])
 def defaultpost(request):
-    
+
     if request.method == 'POST':
         body = request.data
         if body :
@@ -180,7 +179,7 @@ def defaultpost(request):
                 hack = main_hackathon.save()
                 default['hackathon'] = hack._id
                 hackathon_serializer = HackathonSerializer(data= default,many= False)
-            
+                
                 if hackathon_serializer.is_valid():
                     new_default = hackathon_serializer.save()
                     for i in body.get('round', []):
