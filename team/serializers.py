@@ -3,6 +3,7 @@ from rest_framework.serializers import Serializer
 from .models import Team,Members,Teamrequestedmembers
 from user_participation.models import *
 from user_participation.serializers import *
+from hackathons_registration.serializer import *
 # from .models import AnonymousUser
 class Memberserializer(ModelSerializer):
     
@@ -18,9 +19,10 @@ class FieldSerializer(Serializer):
         short_fields = ShortSerializer(Shortfieldinput.objects.filter(registeration=app_id), many=True).data
         multiple_fields = MultiplefieldSerializer(Multiplefieldinput.objects.filter(registeration=app_id), many=True).data
         toggle_fields = TogglefieldSerializer(Togglefieldinput.objects.filter(registeration=app_id), many=True).data
-        stepper_fields = StepperSerializer(Stepperfieldinput.objects.filter(registeration=app_id), many=True).data
+        stepper_fields = StepperInputSerializer(Stepperfieldinput.objects.filter(registeration=app_id), many=True).data
+        print(stepper_fields)
         date_fields = DatefieldSeriallizer(Datefieldinput.objects.filter(registeration=app_id), many=True).data
-        slider_fields = SliderSerializer(Sliderfieldinput.objects.filter(registeration=app_id), many=True).data
+        slider_fields = SliderInputSerializer(Sliderfieldinput.objects.filter(registeration=app_id), many=True).data
         range_fields = RangeSerializer(RangefieldSlider.objects.filter(registeration=app_id), many=True).data
         linear_fields = LinearSerializer(LinearfieldSlider.objects.filter(registeration=app_id), many=True).data
         file_fields = FileuploadSerializer(Fileupload.objects.filter(registeration=app_id), many=True).data
@@ -43,8 +45,21 @@ class FieldSerializer(Serializer):
             linear_fields[i]['type'] = 'linear'
         for i in range(len(multiple_fields)):
             type = MultipleChoiceField.objects.get(_id = multiple_fields[i]['multiple_field']).type
+            options = Options.objects.filter(field = MultipleChoiceField.objects.get(_id = multiple_fields[i]['multiple_field']))
+            print('options',options)
+            options_serializer = OptionSerializer(options,many = True)
             multiple_fields[i]['type'] = type
+            multiple_fields[i]['options'] = options_serializer.data 
             print(type)
+        for i in range(len(slider_fields)):
+            print('slider loop')
+            slider_fields[i]['label'] = Slider.objects.get(_id = slider_fields[i]['slider']).labels
+        for i in range(len(range_fields)):
+            print('range fields')
+            slider_fields[i]['label'] = Slider.objects.get(_id = slider_fields[i]['slider']).labels
+        for i in range(len(linear_fields)):
+            print('linear fields')
+            slider_fields[i]['label'] = Slider.objects.get(_id = slider_fields[i]['slider']).labels
         if long_fields :
             all_fields+=long_fields
         if short_fields : 
@@ -105,6 +120,10 @@ class FieldSerializer(Serializer):
                 response.append(field_map.get(i))
             print(response)
         return {"fields": response}
+    
+    
+    
+    
 class TeamGetserializer(ModelSerializer):
     class Meta:
         model = Team

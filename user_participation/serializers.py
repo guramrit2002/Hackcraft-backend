@@ -106,7 +106,7 @@ class TogglefieldSerializer(ModelSerializer):
             return obj.toggle.serial_number 
         return None
     
-class StepperSerializer(ModelSerializer):
+class StepperInputSerializer(ModelSerializer):
     
     field = SerializerMethodField()
     serial_number = SerializerMethodField()
@@ -145,7 +145,7 @@ class DatefieldSeriallizer(ModelSerializer):
         return None
         
 
-class SliderSerializer(ModelSerializer):
+class SliderInputSerializer(ModelSerializer):
     
     field = SerializerMethodField()
     serial_number = SerializerMethodField()

@@ -103,7 +103,7 @@ def post_participation(request,member_id):
                     if stepper.required:
                         if not field['input']:
                             return Response(f'{stepper.label} is required')
-                    stepperSerializer = StepperSerializer(data=field,many = False)
+                    stepperSerializer = StepperInputSerializer(data=field,many = False)
                     if stepperSerializer.is_valid():
                         stepperSerializer.save()
                 
@@ -127,7 +127,7 @@ def post_participation(request,member_id):
                     if slider.required:
                         if not field['input']:
                             return Response(f'{slider.label} is required')
-                    sliderSerializer = SliderSerializer(data=field,many = False)
+                    sliderSerializer = SliderInputSerializer(data=field,many = False)
                     if sliderSerializer.is_valid():
                         sliderSerializer.save()
                 

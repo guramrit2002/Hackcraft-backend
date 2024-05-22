@@ -37,7 +37,7 @@ def hackathon_registration_form_get_specific(request, id):
         
         # hakathon registerations form fetching using hackathon id
         form = get_object_or_404(HackathonRegisterationForm, hackathon = Hackathons.objects.get(_id = id))
-        # print(form)
+        
         formserializer = HackathonRegistrationFormSerializer(form)
         # Initialize a array to collect all serialized data
         serialized_data = []

@@ -40,7 +40,7 @@ def teampost(request):
                     leader_serializer.save()
                     for email in emails:
                         requested_emails = {
-                            "team":team._id,
+                            "team":team._id,    
                             "email":email,
                             "hackathon":team_data['hackathon']
                         }
