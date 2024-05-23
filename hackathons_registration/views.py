@@ -328,9 +328,12 @@ def hackathon_registeration_form_post(request,id):
                     
                     elif i['type'] == 'linear':
                         print('linear')
+                        i['form'] = form._id
                         sliderserializer = SliderSerializer(data=i)
                         if sliderserializer.is_valid():
                             sliderserializer.save()
+                        else:
+                            print(sliderserializer.errors)
                         i['form'] = form._id
                     
                     elif i['type'] == 'file':
@@ -342,7 +345,7 @@ def hackathon_registeration_form_post(request,id):
                     
                     elif i['type'] == 'tag':
                         i['form'] = form._id
-                        
+                        print(i['form'])
                         print('tag')
                         tagserializer = TagsSerializer(data=i)
                         if tagserializer.is_valid():
@@ -353,6 +356,10 @@ def hackathon_registeration_form_post(request,id):
                                 if tagoptionserializer.is_valid():
                                     tagoptionserializer.save()
                                     print(tagserializer.data.get('text'))
+                                else:
+                                    print(tagoptionserializer.errors)
+                        else:
+                            print(tagserializer.errors)
                             
                 print(form._id)
                 for i in sections:
