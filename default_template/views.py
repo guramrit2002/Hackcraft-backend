@@ -51,7 +51,9 @@ def defaultpage(request, id):
     try:
         hackathon = Hackathons.objects.get(_id = id)
         default = Hackathon.objects.get(hackathon = hackathon._id)
-        round = Round.objects.filter(hackathon = default._id)
+        print('default : ',default._id)
+        round = Round.objects.filter(hackathon = hackathon._id)
+        
         try:
             hackathon_main_serializer = MainHackathonSerializer(hackathon,many = False)
         except Exception as e:
@@ -84,7 +86,9 @@ def defaultpage(request, id):
         del hackathon_data['image5'] 
         hackathon_data['images'] = images
         
+        
         round_serializer = RoundSerializer(round,many=True)
+        print('Rounds : ', round_serializer.data)
         
         fields_data = []
         fields = Field.objects.filter(hackathon=default)
