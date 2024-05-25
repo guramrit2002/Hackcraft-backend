@@ -61,7 +61,7 @@ def dashboardcustomemail(request):
 @api_view(['GET'])
 def defaultgethackathons(request,email):
     try:
-        hackathons = Hackathon.objects.filter(created_by = UserProfile.objects.get(email = email)._id)
+        hackathons = Hackathons.objects.filter(created_by = UserProfile.objects.get(email = email)._id)
         response = {
             'live':[],
             'open':[],
