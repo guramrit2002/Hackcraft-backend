@@ -133,39 +133,42 @@ def dashboardteamget(request,hackathon):
         
     try:
         q = request.query_params.get('q') or None
-        
-        
         teams = Team.objects.filter(hackathon = hackathon)
         form = HackathonRegisterationForm.objects.get(hackathon = hackathon)
-        
         fields = [
-                    LongAnswerField.objects.filter(form=form).label,
-                    ShortAnswerField.objects.filter(form=form).label,
-                    MultipleChoiceField.objects.filter(form=form).label,
-                    DropdownField.objects.filter(form=form).label,
+                    LongAnswerField.objects.filter(form=form),
+                    ShortAnswerField.objects.filter(form=form),
+                    MultipleChoiceField.objects.filter(form=form),
+                    DropdownField.objects.filter(form=form),
                     Toggle.objects.filter(form=form),
                     Stepper.objects.filter(form=form),
                     Date.objects.filter(form=form),
-                    Slider.objects.filter(form=form),
-                    Slider.objects.filter(form=form),
-                    Slider.objects.filter(form=form),
+                    Slider.objects.filter(form=form,type = 'slider'),
+                    Slider.objects.filter(form=form,type = 'linear'),
+                    Slider.objects.filter(form=form, type = 'range'),
                     File.objects.filter(form=form),
                     Tags.objects.filter(form=form)
                 ]
         
         all_form_fields = list(chain.from_iterable(fields))
-        print(all_form_fields)
-        print(len(all_form_fields))
+        print('all_form_fields : ',Slider.objects.filter(form=form,type = 'slider').values('label'))
+        
         all_fields = []
+        for index in range(len(all_form_fields)):
+            all_fields.append(all_form_fields[index].label)
+        print('all fields in form : ',all_fields)
         response = []
         for team in teams:
             members = Members.objects.filter(team = team)
             leader = "" 
             reg_status = ""
+            
             if team.number_of_member == len(members):
                 reg_status = "Completed"
+            
             elif team.number_of_member < len(members):
                 reg_status = "Incompleted"
+            
             team_obj = {
                     "team":{
                             "team_name" : team.team_name,
@@ -174,10 +177,13 @@ def dashboardteamget(request,hackathon):
                             "registeration_status":reg_status,
                             "registeration_date":"",
                             "leader" : leader ,
+                            "all_fields":all_fields
                         },
                     "members": []
-                } 
+            } 
             
+            # print('team_obj : ',team_obj)
+            # response = team_obj
             for member in members:
                 if member.is_leader:
                     team_obj["team"]["leader"] = member.user.first_name + ' ' + member.user.last_name
@@ -198,30 +204,47 @@ def dashboardteamget(request,hackathon):
                     LinearfieldSlider.objects.filter(registeration=participation),
                     Fileupload.objects.filter(registeration=participation),
                     Tagfield.objects.filter(registeration=participation)
+                    
                 ]
                 
                 all_fields = list(chain.from_iterable(queries))
-                
                 field_res = {}
-                for index in range(0,len(all_form_fields)):
+                print(len(all_form_fields))
+                # print(len(all_form_fields))
+                for index in range(len(all_form_fields)):
+                    print(index)
                     if hasattr(all_fields[index], 'long_field'):
+                        print(all_form_fields[index])
                         field_res[all_form_fields[index].label] = all_fields[index].input
+                        print(all_fields)
                     elif hasattr(all_fields[index], 'short_field'):
                         field_res[all_form_fields[index].label] = all_fields[index].input
+                        print(all_fields)
                     elif hasattr(all_fields[index], 'multiple_field'):
                         field_res[all_form_fields[index].label]  = all_fields[index].input.get('option')
+                        print(all_fields)
                     elif hasattr(all_fields[index], 'toggle') and all_fields[index].toggle:
+                        print(all_fields)
                         field_res[all_form_fields[index].label] = all_fields[index].input
                     elif hasattr(all_fields[index], 'stepper_field') and all_fields[index].stepper_field:
+                        print(all_fields)
                         field_res[all_form_fields[index].label] = all_fields[index].input
                     elif hasattr(all_fields[index], 'date_field') and all_fields[index].date_field:
+                        print(all_fields)
                         field_res[all_form_fields[index].label] =  all_fields[index].input
                     elif hasattr(all_fields[index], 'slider') and all_fields[index].slider:
+                        print(all_fields)
+                        print('sliders')
                         field_res[all_form_fields[index].label] =  all_fields[index].input
                     elif hasattr(all_fields[index], 'file_field') and all_fields[index].file_field:
+                        print(all_fields)
                         field_res[all_form_fields[index].label] =  all_fields[index].input
                     elif hasattr(all_fields[index], 'tags_field') and all_fields[index].tags_field:
+                        print(all_fields)
                         field_res[all_form_fields[index].tags_field] =  all_fields[index].input
+                
+                print('all form: ',field_res)
+                
                 member_obj = {
                     "user_first_name":member.user.first_name,
                     "user_last_name":member.user.last_name,
@@ -231,7 +254,7 @@ def dashboardteamget(request,hackathon):
                 team_obj['members'].append(member_obj)
                 team_obj['team']["registeration_date"] = participation.created
             response.append(team_obj)
-            print(response)
+            print(team_obj)
         return Response(response,status=status.HTTP_200_OK)
     except Exception as e:
         print(e)
