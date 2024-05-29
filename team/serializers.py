@@ -6,13 +6,13 @@ from user_participation.serializers import *
 from hackathons_registration.serializer import *
 # from .models import AnonymousUser
 class Memberserializer(ModelSerializer):
-    
+
     class Meta:
         model = Members
         fields = '__all__'
 
 class FieldSerializer(Serializer):
-    
+
     def to_representation(self, data):
         app_id = data.get('application_id')
         long_fields = LongSerializer(Longfieldinput.objects.filter(registeration=app_id), many=True).data
@@ -36,7 +36,7 @@ class FieldSerializer(Serializer):
         response = []
         # Concatenate all the serialized data into a single list
         all_fields = []
-        
+
         for i in range(len(range_fields)):
             range_fields[i]['type'] = "range"
         for i in range(len(slider_fields)):
@@ -49,7 +49,7 @@ class FieldSerializer(Serializer):
             print('options',options)
             options_serializer = OptionSerializer(options,many = True)
             multiple_fields[i]['type'] = type
-            multiple_fields[i]['options'] = options_serializer.data 
+            multiple_fields[i]['options'] = options_serializer.data
             print(type)
         for i in range(len(slider_fields)):
             print('slider loop')
@@ -62,7 +62,7 @@ class FieldSerializer(Serializer):
             slider_fields[i]['label'] = Slider.objects.get(_id = slider_fields[i]['slider']).labels
         if long_fields :
             all_fields+=long_fields
-        if short_fields : 
+        if short_fields :
             all_fields += short_fields
         if multiple_fields:
             all_fields+=multiple_fields
@@ -84,9 +84,9 @@ class FieldSerializer(Serializer):
             all_fields+=tag_fields
         if dropdown_fields:
             all_fields+=dropdown_fields
-            
+
         # print('all fields : ',all_fields)
-        
+
         field_map = {field['serial_number']: field for field in all_fields}
         print(len(field_map.keys()))
         for i in range(1, len(field_map.keys())+1):
@@ -120,10 +120,10 @@ class FieldSerializer(Serializer):
                 response.append(field_map.get(i))
             print(response)
         return {"fields": response}
-    
-    
-    
-    
+
+
+
+
 class TeamGetserializer(ModelSerializer):
     class Meta:
         model = Team
@@ -148,37 +148,37 @@ class TeamGetserializer(ModelSerializer):
                     # print('result : ',result)
                     # print('serialized members2 : ',serialized_members)
                     for email in requested_members:
-                        print(email)
                         try:
                             email = email['email']
-                            user = UserProfile.objects.get(email = email)
-                            member=Members.objects.get(user=user)
-                            participation = Participation.objects.get(member=member)
-                            participation_serializer = ParticipationSerializer(participation,many=False)
-                            participation_qs = participation_serializer.data
-                            participation_qs['participant_college'] = user.organisation
-                            print('participation : ',participation_qs)
-                            
-                            application_data=[]
-                            fields_serializer = FieldSerializer({'application_id': participation_qs.get('_id'), 'form': participation_qs.get('form')})
-                            fields_data = fields_serializer.data['fields']
-                                # print(fields_data)
-                            application_data.append({
+                            try:
+                                user = UserProfile.objects.get(email = email)
+                                print('user : ',user)
+                                member=Members.objects.get(user=user)
+                                try:
+                                    participation = Participation.objects.get(member=member)
+                                    participation_serializer = ParticipationSerializer(participation,many=False)
+                                    participation_qs = participation_serializer.data
+                                    participation_qs['participant_college'] = user.organisation
+                                    print('participation : ',participation_qs)
+                                    application_data=[]
+                                    fields_serializer = FieldSerializer({'application_id': participation_qs.get('_id'), 'form': participation_qs.get('form')})
+                                    fields_data = fields_serializer.data['fields']
+                                    application_data.append({
                                         'required_data': participation_qs,
                                         'is_leader': member.is_leader,
                                         'additional_data': fields_data
                                     })
-                            result['members'].append({email: application_data})
-                            
-                        except Participation.DoesNotExist:
-                            user = UserProfile.objects.get(email = email)
-                            result['members'].append({email : str(user._id)})
-                        except UserProfile.DoesNotExist:
-                            result['members'].append({email : "pending"})
+                                    result['members'].append({email: application_data})
+                                except Participation.DoesNotExist:
+                                    user = UserProfile.objects.get(email = email)
+                                    result['members'].append({email : str(user._id)})
+
+                            except UserProfile.DoesNotExist:
+                                result['members'].append({email : "pending"})
                         except Exception as e:
                             print(e)
                             return (str(e))
-                            
+
                     # print('result',result)
                     return result
                 else:
@@ -188,15 +188,15 @@ class TeamGetserializer(ModelSerializer):
         except Exception as err:
             print(err)
             return {'error': str(err)}
-        
-        
+
+
 class TeamSerializer(ModelSerializer):
     class Meta:
         model = Team
         fields = '__all__'
-        
+
 class RequestedEmail(ModelSerializer):
-    
+
     class Meta:
         model = Teamrequestedmembers
         fields = '__all__'

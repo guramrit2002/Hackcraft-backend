@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status
 from user.models import UserProfile
-from .serializers import TeamSerializer,Memberserializer,TeamGetserializer,Teamrequestedmembers
+from .serializers import TeamSerializer,Memberserializer,TeamGetserializer,RequestedEmail
 from .models import *
 
 @api_view(['GET'])
@@ -28,6 +28,7 @@ def teampost(request):
         except Team.DoesNotExist:
             team_serializer = TeamSerializer(data = team_data,many = False)
             if team_serializer.is_valid() and leader:
+                print('is valid')
                 team_serializer.save()
                 team_data = team_serializer.data
                 team_id = team_data['_id']
@@ -40,11 +41,11 @@ def teampost(request):
                     leader_serializer.save()
                     for email in emails:
                         requested_emails = {
-                            "team":team._id,    
+                            "team":team_id,    
                             "email":email,
                             "hackathon":team_data['hackathon']
                         }
-                        email_serializer = Teamrequestedmembers(data = requested_emails,many = False)
+                        email_serializer = RequestedEmail(data = requested_emails,many = False)
                         if email_serializer.is_valid():
                             email_serializer.save()
                         else:
@@ -92,68 +93,50 @@ def memberpost(request):
         print(e)
         return Response(str(e),status=status.HTTP_400_BAD_REQUEST)
     
+
+
+
 @api_view(['GET'])
-def usertype(request,email,hackathon):
+def usertype(request, email, hackathon):
     try:
-        
-        member = Members.objects.get(user = UserProfile.objects.get(email = email))
-        if member:
-            is_leader = member.is_leader or None
-            if is_leader:
-                return Response({
-                "role" : "leader",
-                'message':"already a leader of a team"
-                })
-            else:
-                return Response({
-                "role" : "member",
-                'message':"already a member of a team"
-                })
-    except UserProfile.DoesNotExist:    
-            members_requested = Teamrequestedmembers.objects.filter(hackathon = hackathon,email = email)
+        user_profile = UserProfile.objects.get(email=email)
+    except UserProfile.DoesNotExist:
+        user_profile = None
+    try:
+        if user_profile:
+            print('user profile : ',user_profile)
+            try:
+                
+                    member = Members.objects.get(user=user_profile,team__hackathon=hackathon)
+                    print(member)
+                    team_id = member.team._id
+                    role = "leader" if member.is_leader else "member"
+                    return Response({
+                        "role": role,
+                        "team": team_id,
+                        "message": f"already a {role} of a team"
+                    })
+            except Members.DoesNotExist:
+                pass
+            except Exception as e:
+                print(e)
+                return Response({'error': str(e)}, status=400)
+            members_requested = Teamrequestedmembers.objects.filter(hackathon=hackathon, email=email)
+            # print(members_requested)
             if members_requested:
-                    try:
-                        user = UserProfile.objects.get(email=email)
-                        return Response({
-                            "role":"pending",
-                            "is_user":True,
-                            "message":"user exists but not a member"
-                        })
-                    except UserProfile.DoesNotExist:
-                        return Response({
-                            "role":"pending",
-                            "is_user":False,
-                            "message":"user does not exists and also not a member"
-                        })
-                    
+                is_user = bool(user_profile)
+                team_id = members_requested[0].team._id
+                return Response({
+                    "role": "pendin",
+                    "is_user": is_user,
+                    "team": team_id,
+                    "message": "user exists but not a member" if is_user else "user does not exist and is not a member"
+                })
             else:
                 return Response({
-                    "role":"firstuser",
-                    "message":"new leader"
-                    })
-    except Members.DoesNotExist:
-        members_requested = Teamrequestedmembers.objects.filter(hackathon = hackathon,email = email)
-        if members_requested:
-                try:
-                    user = UserProfile.objects.get(email=email)
-                    return Response({
-                        "role":"pending",
-                        "is_user":True,
-                        "message":"user exists but not a member"
-                    })
-                except UserProfile.DoesNotExist:
-                    return Response({
-                        "role":"pending",
-                        "is_user":False,
-                        "message":"user does not exists and also not a member"
-                    })
-                
-        else:
-                return Response({
-                    "role":"firstuser",
-                    "message":"new leader"
-                    })
-                
+                    "role": "firstuser",
+                    "team": "",
+                    "message": "new leader"
+                })
     except Exception as e:
-        print(e)
-        return Response(str(e),status=status.HTTP_400_BAD_REQUEST)
+        return Response({'error': str(e)}, status=400)
